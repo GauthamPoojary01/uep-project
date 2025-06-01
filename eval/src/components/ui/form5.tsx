@@ -5,12 +5,12 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button"
 
 const questions = [
-  "1. Total Number of Intake:",
-  "2. Total Admitted:",
-  "3. Total Number Pursuing PhD in Part Time:",
-  "4. Total Number Pursuing PhD in Full Time:",
-  "5. Total Number Completed PhD:",
-  "6. Number of Research Guides:",
+  "a. Total Number of Intake:",
+  "b. Total Admitted:",
+  "c. Total Number Pursuing PhD in Part Time:",
+  "d. Total Number Pursuing PhD in Full Time:",
+  "e. Total Number Completed PhD:",
+  "f. Number of Research Guides:",
 
 ];
 

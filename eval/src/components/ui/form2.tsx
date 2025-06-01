@@ -1,16 +1,15 @@
 'use client';
-//UEPFINAL/eval/src/app/
 
 import Link from 'next/link';
 import { useState } from 'react';
 import { Button } from "@/components/ui/button"
 
 const questions = [
-  "1. Total Number of 4 Year Programmes:",
-  "2. Total Number of 3 Year Programmes:",
-  "3. Total Number of Programmes PG:",
-  "4. Total Number of Certificate Courses:",
-  "5. Total Number of Diploma Courses:"
+  "a. Total Number of 4 Year Programmes:",
+  "b. Total Number of 3 Year Programmes:",
+  "c. Total Number of Programmes PG:",
+  "d. Total Number of Certificate Courses:",
+  "e. Total Number of Diploma Courses:"
 ];
 
 const Form2 = () => {
@@ -19,7 +18,7 @@ const Form2 = () => {
 
   const allFilled = formData.every(val => val !== "" && val !== null && val !== undefined);
 
-   const handleChange = (index: number, value: string) => {
+  const handleChange = (index: number, value: string) => {
   const updated = [...formData];
   updated[index] = value;
   setFormData(updated);

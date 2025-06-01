@@ -5,10 +5,9 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button"
 
 const questions = [
-  "1. Total Number of Professor:",
-  "2. Total Number of Associate Professor:",
-  "3. Total Number of Assistant Professor:",
-  "4. Total Number of Professor in Practice:",
+  "a. Total Number of Associate Professor:",
+  "b. Total Number of Assistant Professor:",
+  "c. Total Number of Professor in Practice:",
 ];
 
 const Form3 = () => {
@@ -22,9 +21,20 @@ const Form3 = () => {
   updated[index] = value;
   setFormData(updated);
   setIsSaved(false);
-  };
+    }
+  
 
   const handleSave = () => setIsSaved(true);
+
+  const totalProfessors = formData.reduce((sum, val) => sum + (parseInt(val, 10) || 0), 0);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  // Block: e, E, +, -, .
+  if (["e", "E", "+", "-", "."].includes(e.key)) {
+    e.preventDefault();
+  }
+};
+
 
   return (
     <div className="max-w-xl mx-auto p-4">
@@ -34,14 +44,28 @@ const Form3 = () => {
           <div key={i}>
             <label className="block mb-1">{q}</label>
             <input
-              type="number"
+              type="numeric"
+              inputMode="numeric"
+              pattern="[0-9]*"
+              min="0"
+              maxLength={2}
               value={formData[i]}
               onChange={e => handleChange(i, e.target.value)}
+              onKeyDown={handleKeyDown}
               required
               className="w-full border border-gray-400 px-3 py-2 rounded focus:outline-none focus:border-blue-500"
             />
           </div>
         ))}
+        <label className='block mb-1'>d. Total Number of Professor:</label>
+        <input
+          className='w-full border border-gray-400 px-3 py-2 rounded focus:outline-none focus:border-blue-500'
+          type='number'
+          maxLength={3}
+          value={totalProfessors}
+          readOnly
+          tabIndex={-1}
+        />
         <div className="flex gap-4 mt-6 items-center">
           <Link href="/schl_prg" className="flex">
             <Button
@@ -97,5 +121,4 @@ const Form3 = () => {
     </div>
   );
 };
-
 export default Form3;

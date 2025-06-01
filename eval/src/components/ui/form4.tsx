@@ -5,14 +5,15 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button"
 
 const questions = [
-  "1. Total Number of Scopus:",
-  "2. Total Number of WOS:",
-  "3. Total Number of UGC Care:",
-  "4. Total Number of H-Index:",
-  "5. Total Number of Citation:",
-  "6. Total Number of Awards:",
-  "7. Total Number of Books/Chapters Published:",
-  "8. Total Number of Paper Presented:",
+  "a. Total Number of Scopus:",
+  "b. Total Number of WOS:",
+  "c. Total Number of UGC Care:",
+  "d. Total Number of H-Index:",
+  "e. Total Number of Citation:",
+  "f. Total Number of Awards:",
+  "g. Total Number of Books:",
+  "h. Total Number of Chapters Published:",
+  "i. Total Number of Paper Presented:",
 ];
 
 const Form4 = () => {
