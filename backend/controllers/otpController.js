@@ -9,11 +9,11 @@ const otpStore = {};
 exports.sendOtp = async (req, res) => {
   const { username } = req.body;
 
-  // Create OTP and store with expiry
+  // Create OTP and store with expiry    
   const otp = Math.floor(100000 + Math.random() * 900000);
   otpStore[username] = {
     code: otp,
-    expiresAt: Date.now() + 5 * 60 * 1000 // 5 mins
+    expiresAt: Date.now() + 5 * 60 * 1000 // 5 minutes
   };
 
   const transporter = nodemailer.createTransport({
