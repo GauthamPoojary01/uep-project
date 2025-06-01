@@ -1,5 +1,5 @@
 //backend/controllers/userController
-const db = require('../db'); // adjust this based on where your DB config is
+const db = require('../db'); 
 const bcrypt = require('bcrypt');
 
 exports.login = (req, res) => {
