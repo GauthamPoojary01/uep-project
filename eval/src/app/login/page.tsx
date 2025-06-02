@@ -1,4 +1,5 @@
 'use client';
+//src/app/login/page.tsx
 
 import Image from 'next/image';
 import { useState } from 'react';
@@ -13,37 +14,45 @@ const Login = () => {
   const router = useRouter();
 
   const handleLogin = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault(); // Prevent form reload
+  if (e) e.preventDefault();
 
-    if (!username || !password || !role) {
-      alert('Please fill all fields');
-      return;
-    }
+  if (!username || !password || !role) {
+    alert('Please fill all fields');
+    return;
+  }
 
-    setLoading(true);
-    try {
-      const response = await fetch('http://localhost:5000/api/users/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, role }),
-      });
+  setLoading(true);
+  try {
+    const response = await fetch('http://localhost:5000/api/users/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password, role }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (response.ok) {
-        alert('Login successful!');
-        localStorage.setItem('user', JSON.stringify(data.user));
+    if (response.ok) {
+      alert('Login successful!');
+      localStorage.setItem('user', JSON.stringify(data.user));
+      
+      if (role === 'Admin') {
+        router.push(`/admin/`);
+      } else if (role === 'Dean') {
         router.push(`/dashboard/${username}`);
       } else {
-        alert(data.message || 'Login failed');
+        alert('Unknown role');
       }
-    } catch (error) {
-      alert('Error connecting to server');
-      console.error(error);
-    } finally {
-      setLoading(false);
+    } else {
+      alert(data.message || 'Login failed');
     }
-  };
+  } catch (error) {
+    alert('Error connecting to server');
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="flex justify-center items-center h-screen bg-gradient-to-b from-[#10074e] to-[#1E3C72] text-blue-900">

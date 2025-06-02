@@ -1,4 +1,5 @@
 'use client';
+// src/app/removeUser/page.tsx
 
 import { useEffect, useState } from 'react';
 
@@ -6,7 +7,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  password: string;
+  password: string; // Ideally avoid this in UI
   school: string;
 }
 
@@ -45,13 +46,15 @@ export default function RemoveUserPage() {
     }
 
     try {
-      const res = await fetch('/api/users/delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids: Array.from(toDelete) }),
-      });
+      const results = await Promise.all(
+        Array.from(toDelete).map(id =>
+          fetch(`/api/users/remove/${id}`, { method: 'DELETE' }) // use relative URL or environment variable
+        )
+      );
 
-      if (!res.ok) throw new Error('Failed to delete users.');
+      const anyFailed = results.some(res => !res.ok);
+
+      if (anyFailed) throw new Error('One or more deletions failed.');
 
       setUsers(users.filter(user => !toDelete.has(user.id)));
       setToDelete(new Set());
@@ -72,34 +75,36 @@ export default function RemoveUserPage() {
             <tr>
               <th className="px-4 py-3 text-left">Delete</th>
               <th className="px-4 py-3 text-left">Name</th>
-              <th className="px-4 py-3 text-left">Username</th>
-              <th className="px-4 py-3 text-left">Password</th>
+              <th className="px-4 py-3 text-left">Email</th>
+              {/* Remove password for security */}
+              {/* <th className="px-4 py-3 text-left">Password</th> */}
               <th className="px-4 py-3 text-left">School</th>
             </tr>
           </thead>
           <tbody>
-            {users.map(user => (
-              <tr key={user.id} className="border-t hover:bg-blue-50">
-                <td className="px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={toDelete.has(user.id)}
-                    onChange={() => toggleDelete(user.id)}
-                    className="accent-yellow-500"
-                  />
-                </td>
-                <td className="px-4 py-2 text-blue-900">{user.name}</td>
-                <td className="px-4 py-2 text-blue-900">{user.email}</td>
-                <td className="px-4 py-2 text-blue-900">{user.password}</td>
-                <td className="px-4 py-2 text-blue-900">{user.school}</td>
-              </tr>
-            ))}
-            {users.length === 0 && (
+            {users.length === 0 ? (
               <tr>
-                <td colSpan={5} className="text-center py-4 text-gray-500">
+                <td colSpan={4} className="text-center py-4 text-gray-500">
                   No users found.
                 </td>
               </tr>
+            ) : (
+              users.map(user => (
+                <tr key={user.id} className="border-t hover:bg-blue-50">
+                  <td className="px-4 py-2">
+                    <input
+                      type="checkbox"
+                      checked={toDelete.has(user.id)}
+                      onChange={() => toggleDelete(user.id)}
+                      className="accent-yellow-500"
+                    />
+                  </td>
+                  <td className="px-4 py-2 text-blue-900">{user.name}</td>
+                  <td className="px-4 py-2 text-blue-900">{user.email}</td>
+                  {/* <td className="px-4 py-2 text-blue-900">{user.password}</td> */}
+                  <td className="px-4 py-2 text-blue-900">{user.school}</td>
+                </tr>
+              ))
             )}
           </tbody>
         </table>

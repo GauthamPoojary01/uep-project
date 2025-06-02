@@ -3,49 +3,39 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import React from 'react';
-import Link from 'next/link';
-import Bside from '@/components/bside'; 
+import Bside from '@/components/bside';
 
-import { useRouter } from 'next/navigation';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-
-
-
-export default function Home() {
-  const router = useRouter();
-
+export default function AdminDashboard() {
   const schools = [
-    'School of life science',
-    'School of arts and humanities',
-    'School of Computer science',
-    'School of Business',
-    'School of Medicine',
+    'SCHOOL OF LIFE SCIENCES',
+    'SCHOOL OF ARTS AND HUMANITIES',
+    'SCHOOL OF INFORMATION SCIENCE AND TECHNOLOGY',
+    'SCHOOL OF PHYSICAL SCIENCES',
+    'SCHOOL OF COMMERCE , FINANCE AND ACCOUNTANCY',
+    'SCHOOL OF BUSINESS AND MANAGEMENT',
+   'SCHOOL OF VOCATIONAL STUDIES',
+   'SCHOOL OF LANGUAGES AND CULTURAL STUDIES'
   ];
 
-  
   return (
-    <div className="min-h-screen bg-[#1e3c72] p-5 font-sans">
+    <div className="min-h-screen bg-[#1e3c72] p-5 font-sans text-white">
       <Head>
         <title>University Evaluation Portal</title>
       </Head>
 
-      <main className="gap-4 flex items-center justify-center h-screen">
+      <main className="flex gap-4 items-center justify-center min-h-[90vh]">
         {/* Left Panel */}
-        <div className="flex-1 bg-[#EDEDF3] rounded-lg p-5 flex flex-col items-center">
+        <div className="flex-1 bg-[#EDEDF3] rounded-lg p-5 flex flex-col items-center text-black max-w-md">
           <Image
-            src="/images/logo1.png"
+            src="/images/logo1.jpg"
             alt="University Logo"
             width={300}
             height={200}
             className="max-h-[85px] w-auto mb-2"
+            priority
           />
-          <h1 className="text-[#f7b636] text-base font-semibold mb-2 text-center">
-            UNIVERSITY EVALUATION PORTAL
+          <h1 className="text-[#f7b636] text-base font-semibold mb-2 text-center uppercase">
+            University Evaluation Portal
           </h1>
           <Image
             src="/images/college.jpg"
@@ -53,22 +43,27 @@ export default function Home() {
             width={300}
             height={200}
             className="w-full h-auto my-3 rounded"
+            priority
           />
         </div>
+
         <Bside />
 
         {/* Right Panel */}
-        <div className="flex-2 bg-[#EDEDF3] rounded-lg p-5 w-full">
-          <h3 className="text-2xl text-[#30579f] font-bold mb-5 text-center">Select from schools</h3>
+        <div className="flex-[2] bg-[#EDEDF3] rounded-lg p-5 max-w-lg text-black">
+          <h3 className="text-2xl text-[#30579f] font-bold mb-5 text-center">
+            Select from schools
+          </h3>
           <div className="flex flex-col gap-4">
             {schools.map((school, index) => (
-              <div
+              <button
                 key={index}
-                className="bg-[#30579f] text-white rounded-lg px-4 py-2 flex justify-between items-center"
+                className="bg-[#30579f] text-white rounded-lg px-4 py-2 flex justify-between items-center hover:bg-[#244a7a] transition"
+                onClick={() => alert(`You clicked ${school}`)} // replace with real navigation
               >
                 <span>{school}</span>
-                <a href="#" className="underline text-sm">Click to Open</a>
-              </div>
+                <span className="underline text-sm cursor-pointer">Click to Open</span>
+              </button>
             ))}
           </div>
         </div>
