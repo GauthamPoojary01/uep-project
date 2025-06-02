@@ -9,11 +9,16 @@ type AsideProps = {
 };
 
 export default function Aside({ username }: AsideProps) {
+  
   const [name, setName] = useState("");
   const [department, setDepartment] = useState("");
+  const decodedUsername = decodeURIComponent(username);
+
+
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
+    
     setName(user.name || "");
     setDepartment(user.department || "");
   }, []);
@@ -54,8 +59,9 @@ export default function Aside({ username }: AsideProps) {
 
           <div className="mt-5 text-sm">
             <p>
-              <strong>Email:</strong> {username}
-            </p>
+  <strong>Email:</strong> {decodedUsername}
+</p>
+
             <p>
               <strong>Name:</strong> {name}
             </p>

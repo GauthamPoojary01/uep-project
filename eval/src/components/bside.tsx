@@ -6,52 +6,47 @@ import { useRouter } from "next/navigation";
 export default function Bside() {
     const router = useRouter();
     return (
-      <aside className="w-3/9 h-170 bg-gray-50 text-gray-800 p-[15px] p-1-+6 rounded-[10px] flex flex-col justify-between">
-          <div >
+      <aside className="w-3/9 h-150 bg-gray-50 text-gray-800 p-[15px] p-1-+6 rounded-[10px] flex flex-col justify-between">
+          
+          <div  >
             <div className="flex justify-center mb-7">
-               <Image
-                          className="rounded-[5px]"
-                          src="/images/college.jpg"
-                          alt="University Logo"
-                          width={600}
-                          height={300}
-                        />
+              <Image className="rounded-[5px]" src="/images/college.jpg" alt="University Logo" width={600} height={300} />
 
             </div>
             <h2 className="text-center text-blue-800. font-extrabold font-serif text-lg text-[20px] mt-4 ">University Evaluation Portal</h2>
             <hr className="my-02" />
-            <div className="w-full text-left text-xs text-[#2d2525] space-y-3 mb-5 mt-5">
+            <div className="w-full text-left text-xs text-[#463737] space-y-2 mb-5 mt-5">
             <Link className="block" href="/">Home</Link>
-           <div className="w-full text-left text-xs text-[#606060] space-y-1 mb-3">
-  <br />
+              <hr className="border-t border-[#f7b636]" />
+           <div className="w-full text-left text-xs text-[#463737] space-y-2 mb-5 ">
   <a href="#" className="block">Year</a>
   <hr className="border-t border-[#f7b636]" />
 
-  <DropdownMenu>
+  <DropdownMenu >
     <DropdownMenuTrigger asChild>
-      <button className="block w-full text-left text-[#606060] text-xs">User info</button>
+      <button className="block w-full text-left text-[#463737] text-xs">User info</button>
     </DropdownMenuTrigger>
-    <DropdownMenuContent className="w-48">
-      <DropdownMenuItem onSelect={() => router.push("@/app/addUser")}>
+    <DropdownMenuContent className="w-38 backdrop-blur-lg border-gray-300 text-[#2c2121] text-xs">
+      <DropdownMenuItem onSelect={() => router.push("/login_user/add_user")}>
         Add User
       </DropdownMenuItem>
-      <DropdownMenuItem onSelect={() => router.push("@/app/editUser")}>
+      <DropdownMenuItem onSelect={() => router.push("/login_user/edit_user")}>
         Edit User Info
       </DropdownMenuItem>
-      <DropdownMenuItem onSelect={() => router.push("@/app/removeUser")}>
+      <DropdownMenuItem onSelect={() => router.push("/login_user/remove_user")}>
         Remove User
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>
 
   <hr className="border-t border-[#f7b636]" />
-  <a href="#" className="block">Add schools</a>
+  <Link href="/add_schl" className="block">Add schools</Link>
   <hr className="border-t border-[#f7b636]" />
   <a href="#" className="block">Notification</a>
 </div>
           </div>
             </div>
-            <p className="text-[10px] text-[#606060] mt-30 justify-center items-center text-center">
+            <p className="text-[10px] text-[#606060] mt-20 justify-center items-center text-center">
             developed by  <Link href="../images/final.jpg" className="text-[#5a45f3]"> theteam</Link>
           </p>
           <div className="flex flex-wrap justify-center text-[10px] gap-x-2 w-full max-w-screen-sm">
