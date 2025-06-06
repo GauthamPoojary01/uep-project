@@ -15,23 +15,34 @@ export default function Bside() {
   const router = useRouter();
 
   return (
-    <aside className="w-1/3 h-[600px] bg-gray-50 text-gray-800 p-4 rounded-lg flex flex-col justify-between">
+    <aside className="w-1/3 h-[750px] bg-gray-50 text-gray-800 p-4 rounded-lg flex flex-col ">
       <div>
+        <div className="flex justify-center mb-7">
+          <Image
+            className="rounded-20px"
+            src="/images/logo1.jpg"
+            alt="University Logo"
+            width={300}
+            height={200}
+            priority
+          />
+        </div>
         <div className="flex justify-center mb-7">
           <Image
             className="rounded-md"
             src="/images/college.jpg"
             alt="University Logo"
-            width={600}
+            width={500}
             height={300}
             priority
           />
         </div>
+        
         <h2 className="text-center text-blue-800 font-extrabold font-serif text-lg mt-4">
           University Evaluation Portal
         </h2>
         <hr className="my-2 border-gray-300" />
-        <nav className="text-xs text-[#463737] space-y-3 mb-5">
+        <nav className="text-xs text-[#463737] space-y-3 mb-3">
           <Link href="/" className="block hover:underline">
             Home
           </Link>
@@ -44,18 +55,18 @@ export default function Bside() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="block w-full text-left text-[#463737] text-xs hover:underline">
+              <button className="block w-full text-left text-[#463737] hover:underline">
                 User info
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-44 backdrop-blur-lg border-gray-300 text-[#2c2121] text-xs">
-              <DropdownMenuItem onSelect={() => router.push('/login_user/add_user')}>
+              <DropdownMenuItem onSelect={() => router.push('/addUser')}>
                 Add User
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => router.push('/login_user/edit_user')}>
+              <DropdownMenuItem onSelect={() => router.push('/editUser')}>
                 Edit User Info
               </DropdownMenuItem>
-              <DropdownMenuItem onSelect={() => router.push('/login_user/remove_user')}>
+              <DropdownMenuItem onSelect={() => router.push('/removeUser')}>
                 Remove User
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -63,7 +74,7 @@ export default function Bside() {
 
           <hr className="border-t border-[#f7b636]" />
 
-          <Link href="/add_schl" className="block hover:underline">
+          <Link href="/addSchools" className="block hover:underline">
             Add schools
           </Link>
 
@@ -71,7 +82,7 @@ export default function Bside() {
 
           <span className="block">Notification</span>
         </nav>
-      </div>
+      
 
       <footer className="text-center text-[10px] text-[#606060] mt-10">
         Developed by{' '}
@@ -96,6 +107,7 @@ export default function Bside() {
         <a href="#" className="text-[#3C29d0] px-2 hover:underline">
           T&amp;C
         </a>
+        </div>
       </div>
     </aside>
   );

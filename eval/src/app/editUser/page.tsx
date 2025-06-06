@@ -1,13 +1,13 @@
+//eval/src/app/editUser/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
 
 interface User {
-  id: number;
-  name: string;
   username: string;
-  password: string;
-  schoolName: string;
+  role: string;
+  name: string;
+  department: string;
 }
 
 export default function EditUserPage() {
@@ -15,41 +15,75 @@ export default function EditUserPage() {
   const [originalUsers, setOriginalUsers] = useState<User[]>([]);
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
 
-  // Fetch user data from backend
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch('/api/users'); // Replace with your actual endpoint
+        const res = await fetch('http://localhost:5000/api/users/get');
         const data = await res.json();
-        setUsers(data);
-        setOriginalUsers(data);
+        const sanitized = data.map((user: User) => ({
+          username: user.username,
+          role: user.role,
+          name: user.name,
+          department: user.department,
+        }));
+        setUsers(sanitized);
+        setOriginalUsers(sanitized);
       } catch (err) {
         console.error('Failed to fetch users:', err);
       }
     };
-
     fetchData();
   }, []);
 
-  const handleInputChange = (id: number, field: keyof User, value: string) => {
-    setUsers(prevUsers =>
-      prevUsers.map(user =>
-        user.id === id ? { ...user, [field]: value } : user
-      )
-    );
+  const handleInputChange = (username: string, field: keyof User, value: string) => {
+    const updatedUsers = users.map(user => {
+      if (user.username === username) {
+        let updatedUser = { ...user, [field]: value };
+        if (field === 'role') {
+          const roleLower = value.toLowerCase();
+          if (roleLower === 'admin') {
+            updatedUser.department = 'administration';
+          } else if (roleLower !== 'dean') {
+            setPopupMessage("Role must be either 'Dean' or 'Admin'");
+            setTimeout(() => setPopupMessage(null), 3000);
+            return user;
+          }
+        }
+        if (field === 'username' && !/\S+@\S+\.\S+/.test(value)) {
+          setPopupMessage("Username must be a valid email address.");
+          setTimeout(() => setPopupMessage(null), 3000);
+          return user;
+        }
+        return updatedUser;
+      }
+      return user;
+    });
+    setUsers(updatedUsers);
   };
 
   const hasChanges = JSON.stringify(users) !== JSON.stringify(originalUsers);
 
   const handleSave = async () => {
     if (!hasChanges) {
-      setPopupMessage('ℹ No changes were made.');
+      setPopupMessage('No changes were made.');
+      setTimeout(() => setPopupMessage(null), 3000);
+      return;
+    }
+
+    if (!users.every(user => ['admin', 'dean'].includes(user.role.toLowerCase()))) {
+      setPopupMessage("Roles must be either 'Dean' or 'Admin'.");
+      setTimeout(() => setPopupMessage(null), 3000);
+      return;
+    }
+
+    if (!users.every(user => /\S+@\S+\.\S+/.test(user.username))) {
+      setPopupMessage("All usernames must be valid email addresses.");
       setTimeout(() => setPopupMessage(null), 3000);
       return;
     }
 
     try {
-      const res = await fetch('/api/users/update', {
+      const res = await fetch('http://localhost:5000/api/users/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(users),
@@ -57,23 +91,28 @@ export default function EditUserPage() {
 
       if (res.ok) {
         const updatedData = await res.json();
-        setOriginalUsers(updatedData);
-        setUsers(updatedData);
-        setPopupMessage('✅ Changes saved successfully.');
+        const sanitizedData = updatedData.map((user: User) => ({
+          username: user.username ?? '',
+          name: user.name ?? '',
+          role: user.role ?? '',
+          department: user.department ?? '',
+        }));
+        setOriginalUsers(sanitizedData);
+        setUsers(sanitizedData);
+        setPopupMessage('Changes saved successfully.');
       } else {
-        setPopupMessage('❌ Failed to save changes.');
+        setPopupMessage('Failed to save changes.');
       }
     } catch (error) {
       console.error(error);
-      setPopupMessage('❌ Error saving changes.');
+      setPopupMessage('Error saving changes.');
     }
-
     setTimeout(() => setPopupMessage(null), 3000);
   };
 
   return (
     <div className="min-h-screen bg-white p-6">
-      <div className="max-w-5xl mx-auto bg-blue-50 shadow-lg rounded-xl p-4 border border-blue-200">
+      <div className="max-w-6xl mx-auto bg-blue-50 shadow-lg rounded-xl p-4 border border-blue-200">
         <h1 className="text-2xl font-bold text-blue-900 mb-4">Edit User Information</h1>
 
         <div className="overflow-x-auto">
@@ -81,44 +120,53 @@ export default function EditUserPage() {
             <thead className="bg-blue-100 text-blue-900">
               <tr>
                 <th className="px-4 py-2 border">Name</th>
-                <th className="px-4 py-2 border">Username</th>
-                <th className="px-4 py-2 border">Password</th>
-                <th className="px-4 py-2 border">School Name</th>
+                <th className="px-4 py-2 border">Username (Email)</th>
+                <th className="px-4 py-2 border">Role</th>
+                <th className="px-4 py-2 border">School</th>
               </tr>
             </thead>
             <tbody className="bg-white text-blue-800">
               {users.map(user => (
-                <tr key={user.id} className="hover:bg-yellow-50">
+                <tr key={user.username} className="hover:bg-yellow-50">
                   <td className="px-4 py-2 border">
                     <input
                       type="text"
                       value={user.name}
-                      onChange={e => handleInputChange(user.id, 'name', e.target.value)}
+                      onChange={e => handleInputChange(user.username, 'name', e.target.value)}
                       className="w-full bg-transparent border-none focus:outline-none"
                     />
                   </td>
                   <td className="px-4 py-2 border">
                     <input
-                      type="text"
+                      type="email"
                       value={user.username}
-                      onChange={e => handleInputChange(user.id, 'username', e.target.value)}
+                      onChange={e => handleInputChange(user.username, 'username', e.target.value)}
                       className="w-full bg-transparent border-none focus:outline-none"
                     />
                   </td>
                   <td className="px-4 py-2 border">
-                    <input
-                      type="text"
-                      value={user.password}
-                      onChange={e => handleInputChange(user.id, 'password', e.target.value)}
+                    <select
+                      value={user.role.toLowerCase()}
+                      onChange={e => handleInputChange(user.username, 'role', e.target.value)}
                       className="w-full bg-transparent border-none focus:outline-none"
-                    />
+                    >
+                      <option value="admin">Admin</option>
+                      <option value="dean">Dean</option>
+                    </select>
                   </td>
                   <td className="px-4 py-2 border">
                     <input
                       type="text"
-                      value={user.schoolName}
-                      onChange={e => handleInputChange(user.id, 'schoolName', e.target.value)}
-                      className="w-full bg-transparent border-none focus:outline-none"
+                      value={user.department}
+                      onChange={e =>
+                        user.role.toLowerCase() !== 'admin'
+                          ? handleInputChange(user.username, 'department', e.target.value)
+                          : null
+                      }
+                      readOnly={user.role.toLowerCase() === 'admin'}
+                      className={`w-full ${
+                        user.role.toLowerCase() === 'admin' ? 'bg-gray-100 text-gray-500' : 'bg-transparent'
+                      } border-none focus:outline-none`}
                     />
                   </td>
                 </tr>

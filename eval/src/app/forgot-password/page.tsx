@@ -2,6 +2,7 @@
 //src/app/forgot-password/page.tsx
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 export default function ForgotPassword() {
   const [username, setUsername] = useState('');
@@ -12,7 +13,7 @@ export default function ForgotPassword() {
 
   const sendOtp = async () => {
     if (!username) {
-      alert('Enter your email/username');
+      toast.error('Enter your email/username');
       return;
     }
 
@@ -25,20 +26,20 @@ export default function ForgotPassword() {
 
       const data = await response.json();
       if (response.ok) {
-        alert('OTP sent to your email');
+        toast.success('OTP sent to your email');
         setOtpSent(true);
       } else {
-        alert(data.message || 'Failed to send OTP');
+        toast.error(data.message || 'Failed to send OTP');
       }
     } catch (err) {
-      alert('Error sending OTP');
+      toast.error('Error sending OTP');
       console.error(err);
     }
   };
 
   const resetPassword = async () => {
     if (!username || !otp || !newPassword) {
-      alert('Fill all fields');
+      toast.error('Fill all fields');
       return;
     }
 
@@ -51,10 +52,10 @@ export default function ForgotPassword() {
     const data = await response.json();
 
     if (response.ok) {
-      alert('Password reset successful');
+      toast.success('Password reset successful');
       router.push('/login');
     } else {
-      alert(data.message || 'Reset failed');
+      toast.error(data.message || 'Reset failed');
     }
   };
 

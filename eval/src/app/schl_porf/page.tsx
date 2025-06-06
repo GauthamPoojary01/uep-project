@@ -1,5 +1,5 @@
 "use client";
-// src/schl_porf/page.tsx
+// evaal/src/app/schl_porf/page.tsx
 import Headings from "@/components/heading";
 import Form1 from "@/components/ui/form1";
 import Aside from "@/components/aside";

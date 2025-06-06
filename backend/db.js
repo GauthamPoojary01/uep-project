@@ -1,21 +1,14 @@
-//backend/db.js
-require('dotenv').config();  
+// backend/db.js
+const mysql = require('mysql2/promise');
 
-const mysql = require('mysql');
-
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
-});
-
-db.connect((err) => {
-  if (err) {
-    console.error('Database connection failed:', err);
-    return;
-  }
-  console.log('MySQL connected');
+const db = mysql.createPool({
+  host: 'localhost',
+  user: 'root',
+  password: '', // Add your MySQL password here
+  database: 'uep',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
 module.exports = db;

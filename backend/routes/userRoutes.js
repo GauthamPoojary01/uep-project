@@ -1,14 +1,19 @@
+//backend/routes/userRoutes.js
 const express = require('express');
 const router = express.Router();
 const otpController = require('../controllers/otpController');
-// Make sure filename is otpController.js
+const bcrypt = require('bcrypt');
+const db = require('../db');
 const userController = require('../controllers/userController');
+
+
 
 router.post('/login', userController.login);
 router.post('/send-otp', otpController.sendOtp);
 router.post('/reset-password-otp', otpController.resetPasswordWithOtp);
 
-// server/routes/userRoutes.js
+
+
 router.post("/info", async (req, res) => {
   const { username } = req.body;
   try {
@@ -24,41 +29,84 @@ router.post("/info", async (req, res) => {
   }
 });
 
-
-
-// Add a new user (Admin or Dean)
 router.post('/add', async (req, res) => {
-  const { username, password, role, name, department } = req.body;
+  const { email, name, password, school, role } = req.body;
 
-  if (!username || !password || !role || !name || !department) {
-    return res.status(400).json({ error: 'Missing required fields' });
+  if (!email || !name || !password || !role) {
+    return res.status(400).json({ error: 'All required fields must be filled.' });
   }
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const query = `INSERT INTO users (username, password, role, name, department) VALUES (?, ?, ?, ?, ?)`;
-    await db.query(query, [username, hashedPassword, role, name, department]);
+    const [result] = await db.execute(
+      'INSERT INTO users (username, name, password, department, role) VALUES (?, ?, ?, ?, ?)',
+      [email, name, hashedPassword, school || '', role]
+    );
 
-    res.status(201).json({ message: 'User added successfully' });
+    res.status(201).json({ message: 'User added successfully.' });
   } catch (err) {
-    console.error('Error adding user:', err);
+    console.error(err);
+    res.status(500).json({ error: 'Database error while adding user.' });
+  }
+});
+
+router.get('/get', async (req, res) => {
+  try {
+    console.log("Trying to fetch users...");
+    const [rows] = await db.query("SELECT username, name, role, department FROM users");
+    console.log("Fetched rows:", rows);
+    res.json(rows);
+  } catch (err) {
+    console.error('Error fetching users:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Remove a user by ID
-router.delete('/remove/:id', async (req, res) => {
-  const userId = req.params.id;
+
+router.delete('/remove/:username', async (req, res) => {
+  const { username } = req.params;
+  try {
+    const [result] = await db.query("DELETE FROM users WHERE username = ?", [username]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json({ message: 'User deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting user:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.post('/update', async (req, res) => {
+  const updatedUsers = req.body;
 
   try {
-    await db.query(`DELETE FROM users WHERE id = ?`, [userId]);
-    res.status(200).json({ message: 'User removed successfully' });
+    for (const user of updatedUsers) {
+      const { username, name, department, role } = user;
+
+      await db.query(
+        "UPDATE users SET name = ?, department = ?, role = ? WHERE username = ?",
+        [name, department, role, username]
+      );
+    }
+
+    const [rows] = await db.query("SELECT username, name, role, department FROM users");
+    res.json(rows);
   } catch (err) {
-    console.error('Error removing user:', err);
+    console.error('Error updating users:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
+router.get('/schools', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT DISTINCT department AS name FROM users WHERE role = "Dean"');
+    res.json(rows);
+  } catch (err) {
+    console.error('Error fetching schools:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 
 module.exports = router;

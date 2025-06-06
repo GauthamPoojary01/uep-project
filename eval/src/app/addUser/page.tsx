@@ -1,5 +1,5 @@
+//eval/src/app/addUser/page.tsx
 'use client';
-// src/app/addUser/page.tsx
 
 import { useState } from 'react';
 
@@ -9,40 +9,45 @@ export default function AddUserPage() {
     name: '',
     password: '',
     school: '',
+    role: '',
   });
 
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const res = await fetch('/api/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      if (res.ok) {
-        setPopupMessage('✅ User added successfully.');
-        setFormData({ email: '', name: '', password: '', school: '' });
-      } else {
-        setPopupMessage('❌ Failed to add user.');
-      }
-    } catch (err) {
-      console.error(err);
-      setPopupMessage('❌ Server error while adding user.');
-    }
-
-    setTimeout(() => setPopupMessage(null), 3000);
-
-    
+  const dataToSend = {
+    ...formData,
+    school: formData.role === 'Admin' ? 'Administration' : formData.school,
   };
+
+  try {
+    const res = await fetch('http://localhost:5000/api/users/add', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dataToSend),
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      setPopupMessage('✅ User added successfully.');
+    } else {
+      setPopupMessage(`❌ ${result.error || 'Failed to add user.'}`);
+    }
+  } catch (err) {
+    console.error(err);
+    setPopupMessage('❌ Server error while adding user.');
+  }
+
+  setTimeout(() => setPopupMessage(null), 3000);
+};
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
@@ -50,7 +55,7 @@ export default function AddUserPage() {
         <h1 className="text-2xl font-semibold text-blue-900 text-center">Add User</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email/Username */}
+          {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-blue-800 mb-1">
               Email/Username
@@ -67,7 +72,7 @@ export default function AddUserPage() {
             />
           </div>
 
-          {/* Full Name */}
+          {/* Name */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-blue-800 mb-1">
               Full Name
@@ -101,24 +106,55 @@ export default function AddUserPage() {
             />
           </div>
 
-          {/* Department */}
+          {/* Role */}
           <div>
-            <label htmlFor="school" className="block text-sm font-medium text-blue-800 mb-1">
-              Department
+            <label htmlFor="role" className="block text-sm font-medium text-blue-800 mb-1">Role</label>
+
+            <label className="block">
+              <input
+                type="radio"
+                name="role"
+                value="Dean"
+                onChange={handleChange}
+                className="mr-2"
+                checked={formData.role === 'Dean'}
+              />
+              <span className="text-xs">Dean</span>
             </label>
-            <input
-              type="text"
-              id="school"
-              name="school"
-              value={formData.school}
-              onChange={handleChange}
-              required
-              placeholder="School of Science/Engineering/etc."
-              className="w-full px-4 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+
+            <label className="block">
+              <input
+                type="radio"
+                name="role"
+                value="Admin"
+                onChange={handleChange}
+                className="mr-2"
+                checked={formData.role === 'Admin'}
+              />
+              <span className="text-xs">Admin</span>
+            </label>
           </div>
 
-          {/* Submit Button */}
+          {/* Department - Show only if role is Dean */}
+          {formData.role === 'Dean' && (
+            <div>
+              <label htmlFor="school" className="block text-sm font-medium text-blue-800 mb-1">
+                Department
+              </label>
+              <input
+                type="text"
+                id="school"
+                name="school"
+                value={formData.school}
+                onChange={handleChange}
+                required
+                placeholder="School of Science/Engineering/etc."
+                className="w-full px-4 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          )}
+
+          {/* Submit */}
           <div>
             <button
               type="submit"
@@ -129,7 +165,6 @@ export default function AddUserPage() {
           </div>
         </form>
 
-        {/* Popup Message */}
         {popupMessage && (
           <div className="text-center mt-4 bg-yellow-100 border border-yellow-300 text-yellow-900 py-2 px-4 rounded-lg font-medium">
             {popupMessage}

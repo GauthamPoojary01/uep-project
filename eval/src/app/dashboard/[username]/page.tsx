@@ -1,3 +1,5 @@
+// Updated Dashboard page with correct Criteria labels
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,7 +14,6 @@ export default function Dashboard() {
   const [department, setDepartment] = useState("");
 
   useEffect(() => {
-    
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       const user = JSON.parse(storedUser);
@@ -21,22 +22,27 @@ export default function Dashboard() {
     }
   }, []);
 
-  const parameters = [
-    { label: "1. SCHOOL PROFILE", href: "/schl_porf" },
-    { label: "2. SCHOOL PROGRAMME", href: "/schl_prg" },
-    { label: "3. STAFF PROFILE", href: "/staff_pf" },
-    { label: "4. RESEARCH", href: "/research" },
-    { label: "5. PHD", href: "/phd" },
-    { label: "6. RESEARCH PROJECTS", href: "/research_proj" },
-    { label: "7. CONSULTANCY", href: "/consult" },
-    { label: "8. MOU'S", href: "/mous" },
-    { label: "9. SCHOOL ACTIVITIES", href: "/schl_act" },
-    { label: "10. STAFF ACHIEVEMENTS", href: "/staff_achieve" },
-    { label: "11. CERTIFICATE COURSES", href: "/cert_course" },
-    { label: "12. STUDENT ACHIEVEMENTS", href: "/stu_achieve" },
-    { label: "13. STUDENT INTAKE", href: "/stu_intake" },
-    { label: "14. PLACEMENTS", href: "/placement" },
+  const criteriaLabels = [
+    "1. SCHOOL PROFILE",
+    "2. SCHOOL PROGRAMME",
+    "3. STAFF PROFILE",
+    "4. RESEARCH",
+    "5. PHD",
+    "6. RESEARCH PROJECTS",
+    "7. CONSULTANCY",
+    "8. MOU'S",
+    "9. SCHOOL ACTIVITIES",
+    "10. STAFF ACHIEVEMENTS",
+    "11. CERTIFICATE COURSES",
+    "12. STUDENT ACHIEVEMENTS",
+    "13. STUDENT INTAKE",
+    "14. PLACEMENT AND HIGHER EDUCATION"
   ];
+
+  const parameters = criteriaLabels.map((label, index) => ({
+    label,
+    href: `/criteria/${index + 1}`
+  }));
 
   return (
     <div className="rounded-[10px] min-h-screen bg-gradient-to-b from-[#10074e] to-[#1E3C72] text-blue-900 p-5 relative">
@@ -59,7 +65,10 @@ export default function Dashboard() {
                   className="bg-[#293481] text-white rounded-lg px-4 py-2 flex justify-between items-center mr-4"
                 >
                   <span>{item.label}</span>
-                  <Link href={item.href} className="underline text-sm font-medium">
+                  <Link
+                    href={item.href}
+                    className="underline text-sm font-medium"
+                  >
                     Click to Open
                   </Link>
                 </div>

@@ -1,14 +1,12 @@
+//eval.src/app/removeUser/page.tsx
 'use client';
-// src/app/removeUser/page.tsx
 
 import { useEffect, useState } from 'react';
 
 interface User {
-  id: string;
   name: string;
-  email: string;
-  password: string; // Ideally avoid this in UI
-  school: string;
+  username: string; 
+  department: string; 
 }
 
 export default function RemoveUserPage() {
@@ -19,22 +17,27 @@ export default function RemoveUserPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch('/api/users');
+        const res = await fetch('http://localhost:5000/api/users/get');
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
         const data = await res.json();
+        if (!Array.isArray(data)) throw new Error('Invalid response format');
         setUsers(data);
       } catch (error) {
         console.error('Error fetching users:', error);
+        setPopupMessage('Failed to load users. Please check server.');
         setUsers([]);
       }
     };
     fetchUsers();
   }, []);
 
-  const toggleDelete = (userId: string) => {
+  const toggleDelete = (email: string) => {
     setToDelete(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(userId)) newSet.delete(userId);
-      else newSet.add(userId);
+      if (newSet.has(email)) newSet.delete(email);
+      else newSet.add(email);
       return newSet;
     });
   };
@@ -47,16 +50,17 @@ export default function RemoveUserPage() {
 
     try {
       const results = await Promise.all(
-        Array.from(toDelete).map(id =>
-          fetch(`/api/users/remove/${id}`, { method: 'DELETE' }) // use relative URL or environment variable
+        Array.from(toDelete).map(email =>
+          fetch(`http://localhost:5000/api/users/remove/${encodeURIComponent(email)}`, {
+            method: 'DELETE'
+          })
         )
       );
 
       const anyFailed = results.some(res => !res.ok);
-
       if (anyFailed) throw new Error('One or more deletions failed.');
 
-      setUsers(users.filter(user => !toDelete.has(user.id)));
+      setUsers(users.filter(user => !toDelete.has(user.username)));
       setToDelete(new Set());
       setPopupMessage('Selected users have been deleted.');
     } catch (error) {
@@ -76,8 +80,6 @@ export default function RemoveUserPage() {
               <th className="px-4 py-3 text-left">Delete</th>
               <th className="px-4 py-3 text-left">Name</th>
               <th className="px-4 py-3 text-left">Email</th>
-              {/* Remove password for security */}
-              {/* <th className="px-4 py-3 text-left">Password</th> */}
               <th className="px-4 py-3 text-left">School</th>
             </tr>
           </thead>
@@ -90,19 +92,18 @@ export default function RemoveUserPage() {
               </tr>
             ) : (
               users.map(user => (
-                <tr key={user.id} className="border-t hover:bg-blue-50">
+                <tr key={user.username} className="border-t hover:bg-blue-50">
                   <td className="px-4 py-2">
                     <input
                       type="checkbox"
-                      checked={toDelete.has(user.id)}
-                      onChange={() => toggleDelete(user.id)}
+                      checked={toDelete.has(user.username)}
+                      onChange={() => toggleDelete(user.username)}
                       className="accent-yellow-500"
                     />
                   </td>
                   <td className="px-4 py-2 text-blue-900">{user.name}</td>
-                  <td className="px-4 py-2 text-blue-900">{user.email}</td>
-                  {/* <td className="px-4 py-2 text-blue-900">{user.password}</td> */}
-                  <td className="px-4 py-2 text-blue-900">{user.school}</td>
+                  <td className="px-4 py-2 text-blue-900">{user.username}</td>
+                  <td className="px-4 py-2 text-blue-900">{user.department}</td>
                 </tr>
               ))
             )}

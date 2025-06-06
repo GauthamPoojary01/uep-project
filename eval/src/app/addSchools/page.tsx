@@ -1,48 +1,19 @@
+// src/app/addSchools/page.tsx
 'use client';
-//src/app/addSchools/page.tsx
-
-import { useParams } from "next/navigation";
-import Headings from "@/components/heading";
-import Aside from "@/components/bside";
-import Link from "next/link";
 
 import { useState } from "react";
-
-
-export default function AdminDashboard() {
-  const { username } = useParams();
 
 const SchoolsPage = () => {
   const [schools, setSchools] = useState<{ id: number; name: string }[]>([]);
   const [newSchool, setNewSchool] = useState("");
   const [lastId, setLastId] = useState(0);
 
-  const addSchool = async () => {
-    if (!newSchool.trim()) return;
-
-    try {
-      const sid = lastId + 1;
-      const res = await fetch('http://localhost:5000/schools/add', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sid,
-          school_name: newSchool,
-          no_of_faculties: 0,
-          current_year: new Date().getFullYear()
-        }),
-      });
-
-      if (res.ok) {
-        setSchools([...schools, { id: sid, name: newSchool }]);
-        setLastId(sid);
-        setNewSchool('');
-      } else {
-        alert('Failed to add school');
-      }
-    } catch (err) {
-      console.error('Error adding school', err);
-      alert('Server error');
+  const addSchool = () => {
+    if (newSchool.trim()) {
+      const nextId = lastId + 1;
+      setSchools([...schools, { id: nextId, name: newSchool }]);
+      setLastId(nextId);
+      setNewSchool("");
     }
   };
 
@@ -84,4 +55,5 @@ const SchoolsPage = () => {
     </div>
   );
 };
-};
+
+export default SchoolsPage;

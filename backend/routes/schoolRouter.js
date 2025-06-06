@@ -1,26 +1,26 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const db = require('../db');
-//backend/routes/schoolRouter.js
-// Add new school
-router.post('/add', async (req, res) => {
-  const { sid, school_name, current_year, no_of_faculties } = req.body;
+const db = require("../db");
+
+// Auto-generate ALOY_XX_ ID and insert new school
+router.post("/add", async (req, res) => {
+  const { school_name, dean_email } = req.body;
 
   try {
-    await db.query(
-      `INSERT INTO school_profile 
-        (sid, school_name, no_of_faculties, current_year, 
-         no_of_phd, no_of_net_kset, no_of_without_phd_kset_net, no_of_pursuing_phd,
-         total_no_of_associate_professor, total_no_of_assistant_professor,
-         total_no_of_professor_of_practice, teaching_staff_assistant) 
-       VALUES (?, ?, ?, ?, 0, 0, 0, 0, 0, 0, 0, 0)`,
-      [sid, school_name, no_of_faculties, current_year]
+    // Find next number
+    const [rows] = await db.query("SELECT COUNT(*) as count FROM schools");
+    const nextId = rows[0].count + 1;
+    const school_id = `ALOY_${nextId.toString().padStart(2, "0")}_`;
+
+    const [result] = await db.query(
+      "INSERT INTO schools (school_id, school_name, dean_email) VALUES (?, ?, ?)",
+      [school_id, school_name, dean_email]
     );
 
-    res.status(201).json({ message: 'School added successfully' });
+    res.status(201).json({ school_id });
   } catch (err) {
-    console.error('Error adding school:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("School add error:", err);
+    res.status(500).json({ error: "Failed to add school" });
   }
 });
 

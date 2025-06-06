@@ -1,6 +1,6 @@
 'use client';
 //src/app/login/page.tsx
-
+import toast from 'react-hot-toast';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -17,7 +17,7 @@ const Login = () => {
   if (e) e.preventDefault();
 
   if (!username || !password || !role) {
-    alert('Please fill all fields');
+    toast.error('Please fill all fields');
     return;
   }
 
@@ -32,7 +32,7 @@ const Login = () => {
     const data = await response.json();
 
     if (response.ok) {
-      alert('Login successful!');
+      toast.success('Login successful!');
       localStorage.setItem('user', JSON.stringify(data.user));
       
       if (role === 'Admin') {
@@ -40,13 +40,13 @@ const Login = () => {
       } else if (role === 'Dean') {
         router.push(`/dashboard/${username}`);
       } else {
-        alert('Unknown role');
+        toast.error('Unknown role');
       }
     } else {
-      alert(data.message || 'Login failed');
+      toast.error(data.message || 'Login failed');
     }
   } catch (error) {
-    alert('Error connecting to server');
+    toast.error('Error connecting to server');
     console.error(error);
   } finally {
     setLoading(false);
@@ -129,3 +129,5 @@ const Login = () => {
 };
 
 export default Login;
+
+
