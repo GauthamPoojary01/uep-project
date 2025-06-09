@@ -5,7 +5,7 @@ const otpController = require('../controllers/otpController');
 const bcrypt = require('bcrypt');
 const db = require('../db');
 const userController = require('../controllers/userController');
-
+const schoolController = require('../controllers/schoolController');
 
 
 router.post('/login', userController.login);
@@ -30,17 +30,22 @@ router.post("/info", async (req, res) => {
 });
 
 router.post('/add', async (req, res) => {
-  const { email, name, password, school, role } = req.body;
+  const { email, name, school, role } = req.body;
 
-  if (!email || !name || !password || !role) {
+  if (!email || !name || !role) {
     return res.status(400).json({ error: 'All required fields must be filled.' });
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const [schoolData] = await db.query('SELECT * FROM school_metadata WHERE school_name = ?', [school]);
+    if (schoolData.length === 0) {
+      return res.status(404).json({ error: 'School not found' });
+    }
+
+    const sid = schoolData[0].sid;
     const [result] = await db.execute(
-      'INSERT INTO users (username, name, password, department, role) VALUES (?, ?, ?, ?, ?)',
-      [email, name, hashedPassword, school || '', role]
+      'INSERT INTO users (username, name, password, department, role, sid) VALUES (?, ?, ?, ?, ?, ?)',
+      [email, name, '', school || '', role, sid]
     );
 
     res.status(201).json({ message: 'User added successfully.' });
@@ -107,6 +112,41 @@ router.get('/schools', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+router.get('/unassigned-schools', async (req, res) => {
+  try {
+    const [assigned] = await db.query('SELECT sid FROM users WHERE role = "Dean"');
+    const assignedSids = assigned.map(row => row.sid).filter(Boolean);
+    const [schools] = await db.query(
+      assignedSids.length
+        ? `SELECT * FROM school_metadata WHERE sid NOT IN (?)`
+        : `SELECT * FROM school_metadata`,
+      assignedSids.length ? [assignedSids] : []
+    );
+    res.json(schools);
+  } catch (err) {
+    console.error('Error fetching unassigned schools:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+// backend/routes/userRoutes.js
+router.get('/schools', async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT DISTINCT s.school_name
+      FROM users u
+      JOIN school_metadata s ON u.sid = s.sid
+      WHERE u.role = 'Dean'
+    `);
+    res.json(rows);
+  } catch (err) {
+    console.error('Error fetching assigned schools:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 
 module.exports = router;

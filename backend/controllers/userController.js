@@ -29,7 +29,21 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+exports.setPassword = async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Username and password are required.' });
+  }
 
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db.query('UPDATE users SET password = ? WHERE username = ?', [hashedPassword, username]);
+    res.json({ message: 'Password set successfully' });
+  } catch (err) {
+    console.error('Set password error:', err);
+    res.status(500).json({ message: 'Database error' });
+  }
+};
 
 
 exports.resetPasswordWithOtp = async (req, res) => {

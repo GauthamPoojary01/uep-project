@@ -1,18 +1,28 @@
+///backend/controllers/schoolController.js
 const db = require('../db');
 
 exports.addSchool = async (req, res) => {
-  const { name } = req.body;
-  if (!name) return res.status(400).json({ message: 'School name required' });
+  const { school_name } = req.body;
+  if (!school_name) {
+    return res.status(400).json({ error: 'School name is required' });
+  }
 
   try {
-    const [last] = await db.query('SELECT COUNT(*) AS count FROM school_metadata');
-    const nextId = last[0].count + 1;
-    const school_id = `ALOY_${nextId.toString().padStart(2, '0')}_`;
+    const [rows] = await db.query('SELECT MAX(sid) as maxSid FROM school_metadata');
+    const nextSid = (rows[0].maxSid || 0) + 1;
+    const school_id = `ALOY_${String(nextSid).padStart(2, '0')}_`;
 
-    const [insertResult] = await db.query('INSERT INTO school_metadata (school_id, name) VALUES (?, ?)', [school_id, name]);
-    res.status(201).json({ message: 'School added', school_id });
+    await db.query(
+      'INSERT INTO school_metadata (sid, school_id, school_name) VALUES (?, ?, ?)',
+      [nextSid, school_id, school_name]
+    );
+
+    res.status(201).json({ message: 'School added', sid: nextSid });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Error adding school' });
+    console.error('Error adding school:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+
+

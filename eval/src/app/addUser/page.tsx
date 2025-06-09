@@ -1,53 +1,61 @@
-//eval/src/app/addUser/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function AddUserPage() {
   const [formData, setFormData] = useState({
     email: '',
     name: '',
-    password: '',
     school: '',
     role: '',
   });
 
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
+  const [unassignedSchools, setUnassignedSchools] = useState<{ sid: number; school_name: string }[]>([]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    if (formData.role === 'Dean') {
+      fetch('http://localhost:5000/api/users/unassigned-schools')
+        .then(res => res.json())
+        .then(data => setUnassignedSchools(data))
+        .catch(err => console.error('Failed to fetch schools', err));
+    }
+  }, [formData.role]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const dataToSend = {
-    ...formData,
-    school: formData.role === 'Admin' ? 'Administration' : formData.school,
-  };
+    const dataToSend = {
+      ...formData,
+      school: formData.role === 'Admin' ? 'Administration' : formData.school,
+    };
 
-  try {
-    const res = await fetch('http://localhost:5000/api/users/add', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dataToSend),
-    });
+    try {
+      const res = await fetch('http://localhost:5000/api/users/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToSend),
+      });
 
-    const result = await res.json();
+      const result = await res.json();
 
-    if (res.ok) {
-      setPopupMessage('✅ User added successfully.');
-    } else {
-      setPopupMessage(`❌ ${result.error || 'Failed to add user.'}`);
+      if (res.ok) {
+        setPopupMessage('✅ User added successfully.');
+      } else {
+        setPopupMessage(`❌ ${result.error || 'Failed to add user.'}`);
+      }
+    } catch (err) {
+      console.error(err);
+      setPopupMessage('❌ Server error while adding user.');
     }
-  } catch (err) {
-    console.error(err);
-    setPopupMessage('❌ Server error while adding user.');
-  }
 
-  setTimeout(() => setPopupMessage(null), 3000);
-};
+    setTimeout(() => setPopupMessage(null), 3000);
+  };
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
@@ -55,7 +63,6 @@ export default function AddUserPage() {
         <h1 className="text-2xl font-semibold text-blue-900 text-center">Add User</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-blue-800 mb-1">
               Email/Username
@@ -68,11 +75,10 @@ export default function AddUserPage() {
               onChange={handleChange}
               required
               placeholder="Enter email address"
-              className="w-full px-4 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-blue-200 rounded-md"
             />
           </div>
 
-          {/* Name */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-blue-800 mb-1">
               Full Name
@@ -85,31 +91,12 @@ export default function AddUserPage() {
               onChange={handleChange}
               required
               placeholder="Enter full name"
-              className="w-full px-4 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-blue-200 rounded-md"
             />
           </div>
 
-          {/* Password */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-blue-800 mb-1">
-              Password
-            </label>
-            <input
-              type="text"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              placeholder="Enter password"
-              className="w-full px-4 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Role */}
           <div>
             <label htmlFor="role" className="block text-sm font-medium text-blue-800 mb-1">Role</label>
-
             <label className="block">
               <input
                 type="radio"
@@ -121,7 +108,6 @@ export default function AddUserPage() {
               />
               <span className="text-xs">Dean</span>
             </label>
-
             <label className="block">
               <input
                 type="radio"
@@ -135,26 +121,29 @@ export default function AddUserPage() {
             </label>
           </div>
 
-          {/* Department - Show only if role is Dean */}
           {formData.role === 'Dean' && (
             <div>
               <label htmlFor="school" className="block text-sm font-medium text-blue-800 mb-1">
-                Department
+                Assign School (Unassigned only)
               </label>
-              <input
-                type="text"
+              <select
                 id="school"
                 name="school"
                 value={formData.school}
                 onChange={handleChange}
                 required
-                placeholder="School of Science/Engineering/etc."
-                className="w-full px-4 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+                className="w-full px-4 py-2 border border-blue-200 rounded-md"
+              >
+                <option value="" disabled>Select school</option>
+                {unassignedSchools.map(school => (
+                  <option key={school.sid} value={school.school_name}>
+                    {school.school_name}
+                  </option>
+                ))}
+              </select>
             </div>
           )}
 
-          {/* Submit */}
           <div>
             <button
               type="submit"

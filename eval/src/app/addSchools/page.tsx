@@ -1,57 +1,79 @@
-// src/app/addSchools/page.tsx
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const SchoolsPage = () => {
-  const [schools, setSchools] = useState<{ id: number; name: string }[]>([]);
-  const [newSchool, setNewSchool] = useState("");
-  const [lastId, setLastId] = useState(0);
+  const [schoolName, setSchoolName] = useState('');
+  const [message, setMessage] = useState('');
+  const [existingSchools, setExistingSchools] = useState<{ school_name: string }[]>([]);
 
-  const addSchool = () => {
-    if (newSchool.trim()) {
-      const nextId = lastId + 1;
-      setSchools([...schools, { id: nextId, name: newSchool }]);
-      setLastId(nextId);
-      setNewSchool("");
+  const addSchool = async () => {
+    if (!schoolName.trim()) return;
+
+    try {
+      const res = await fetch('http://localhost:5000/api/schools/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ school_name: schoolName })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setMessage('✅ School added successfully');
+        setSchoolName('');
+        fetchExistingSchools();
+      } else {
+        setMessage(`❌ ${data.error}`);
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage('❌ Error adding school');
     }
   };
 
+  const fetchExistingSchools = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/users/schools');
+      const data = await res.json();
+      console.log("Fetched schools:", data);
+      setExistingSchools(data);
+    } catch (err) {
+      console.error('Error fetching existing schools:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchExistingSchools();
+  }, []);
+
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Schools / Departments</h1>
+    <div className="p-6 max-w-xl mx-auto">
+      <h1 className="text-xl font-bold mb-4">Add School</h1>
+      <input
+        type="text"
+        value={schoolName}
+        onChange={(e) => setSchoolName(e.target.value)}
+        placeholder="Enter school name"
+        className="w-full border px-3 py-2 rounded mb-2"
+      />
+      <button
+        onClick={addSchool}
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        Add
+      </button>
+      {message && <p className="mt-2 text-sm">{message}</p>}
 
-      <div className="mb-4 flex gap-2">
-        <input
-          value={newSchool}
-          onChange={(e) => setNewSchool(e.target.value)}
-          placeholder="New school name"
-          className="border px-3 py-2 rounded w-full"
-        />
-        <button
-          onClick={addSchool}
-          className="bg-[#f7b636] text-white px-4 py-2 rounded hover:bg-[#e0a72d]"
-        >
-          Add
-        </button>
-      </div>
-
-      <table className="w-full border border-gray-300">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border px-4 py-2 text-left">ID</th>
-            <th className="border px-4 py-2 text-left">Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          {schools.map((school) => (
-            <tr key={school.id}>
-              <td className="border px-4 py-2">{school.id}</td>
-              <td className="border px-4 py-2">{school.name}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h2 className="mt-6 text-lg font-semibold">Existing Schools Assigned to Deans</h2>
+      <ul className="list-disc list-inside text-sm text-gray-700 mt-2">
+        {existingSchools.length === 0 ? (
+          <li>No schools assigned yet.</li>
+        ) : (
+          existingSchools.map((school, idx) => (
+            <li key={idx}>{school.school_name}</li>
+          ))
+        )}
+      </ul>
     </div>
   );
 };
