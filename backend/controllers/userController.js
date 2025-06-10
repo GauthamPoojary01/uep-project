@@ -5,29 +5,48 @@ const bcrypt = require('bcrypt');
 exports.login = async (req, res) => {
   const { username, password, role } = req.body;
 
-  if (!username || !password || !role) {
-    return res.status(400).json({ message: 'All fields are required' });
+ if (!username || !role) {
+  toast.error('Please enter username and select role');
+  return;
+}
+
+setLoading(true);
+
+try {
+  const response = await fetch('http://localhost:5000/api/users/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password, role }),
+  });
+
+  const data = await response.json();
+
+  if (data.requiresPasswordSetup) {
+    toast('🔐 Please set your password');
+    router.push(`/set-password?user=${encodeURIComponent(username)}`);
+    return;
   }
 
-  try {
-    const [results] = await db.query('SELECT * FROM users WHERE username = ? AND role = ?', [username, role]);
+  if (response.ok) {
+    toast.success('Login successful!');
+    localStorage.setItem('user', JSON.stringify(data.user));
 
-    if (results.length === 0) {
-      return res.status(401).json({ message: 'Invalid username or role' });
+    if (role === 'Admin') {
+      router.push(`/admin/`);
+    } else if (role === 'Dean') {
+      router.push(`/dashboard/${username}`);
+    } else {
+      toast.error('Unknown role');
     }
-
-    const user = results[0];
-    const match = await bcrypt.compare(password, user.password);
-
-    if (!match) {
-      return res.status(401).json({ message: 'Incorrect password' });
-    }
-
-    res.json({ message: 'Login successful', user });
-  } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ message: 'Internal server error' });
+  } else {
+    toast.error(data.message || 'Login failed');
   }
+} catch (error) {
+  toast.error('Error connecting to server');
+  console.error(error);
+} finally {
+  setLoading(false);
+}
 };
 exports.setPassword = async (req, res) => {
   const { username, password } = req.body;
