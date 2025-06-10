@@ -6,12 +6,12 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button"
 
 const questions = [
-"1. Total number of intake in year 2021-2022:",
-"2. Total number of students admitted:",
-"3. Total number of students graduating this year:",
-"4. Total number of placements:",
-"5. Total number of students who opted higher studies:",
-"6. Link of details:"
+"a. Total number of intake in year:",
+"b. Total number of students admitted:",
+"c. Total number of students graduating this year:",
+"d. Total number of placements:",
+"e. Total number of students who opted higher studies:",
+"f. Link of details:"
 ];
 
 const Form14 = () => {

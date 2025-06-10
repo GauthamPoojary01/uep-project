@@ -6,21 +6,21 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button"
 
 const questions = [
-"1. Total number of guest talks:",
-"2.  Total number of alumni Interation:",
-"3.  Total number of Industrial visits:",
-"4.  Total number of study tours:",
-"5.  Total number of Fests:",
-"6.  Total number of FDP:",
-"7.  Total number of EDP:",
-"8.  Total number of MDP:",
-"9.  Total number of Conferences:",
-"10.  Total number of Workshops:",
-"11.  Total number of  National seminars:",
-"12.  Total number of Seminars/Conferences/Workshops related to Intellectual Property right:",
-"13. Total number of Seminars/Conferences/Workshops related to Research Methodology:",
-"14. Total number of Seminars/Conferences/Workshops related to Entrepreneurship:",
-"15. Total number of Seminars/Conferences/Workshops related to skill development:"
+"a. Total number of guest talks:",
+"b.  Total number of alumni Interation:",
+"c.  Total number of Industrial visits:",
+"d.  Total number of study tours:",
+"e.  Total number of Fests:",
+"f.  Total number of FDP:",
+"g.  Total number of EDP:",
+"h.  Total number of MDP:",
+"i.  Total number of Conferences:",
+"j.  Total number of Workshops:",
+"k.  Total number of  National seminars:",
+"l.  Total number of Seminars/Conferences/Workshops related to Intellectual Property right:",
+"m. Total number of Seminars/Conferences/Workshops related to Research Methodology:",
+"n. Total number of Seminars/Conferences/Workshops related to Entrepreneurship:",
+"o. Total number of Seminars/Conferences/Workshops related to skill development:"
 ];
 
 const Form9 = () => {
@@ -97,7 +97,7 @@ const Form9 = () => {
               Submit
             </button>
           </div>
-          <Link href="/staff_achive">
+          <Link href="/staff_achieve">
           <button
             type="button"
             className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700"

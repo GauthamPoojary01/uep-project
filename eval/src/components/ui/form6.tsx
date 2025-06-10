@@ -2,24 +2,43 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { Button } from "@/components/ui/button"
 
 const questions = [
-  "1. Number of Faculties Involved:",
-  "2. Number of Projects:",
-  "3. Total Number of Projects under Government Category:",
-  "4. Total Amount Allocated to Government Category:",
-  "5. Total Number of Projects under Non-Government Category:",
-  "6. Total Amount Allocated to Non-Government Category:",
-  "7. Total Number of Projects under MJES Category:",
-  "8. Total Amount Allocated to MJES Category:",
+  "a. Number of Faculties Involved:",
+  "b. Total Number of Projects under Government Category:",
+  "c. Total Number of Projects under Non-Government Category:",
+  "d. Total Number of Projects under MJES Category:",
+  "e. Total Amount Allocated to Government Category:",
+  "f. Total Amount Allocated to Non-Government Category:",
+  "g.Total Amount Allocated to MJES Category:",
+  "h. Toatl Number of Projects:",
+  "i. Total Amount Allocated to All Categories:",
 
 ];
 
 const Form6 = () => {
   const [formData, setFormData] = useState(Array(questions.length).fill(''));
   const [isSaved, setIsSaved] = useState(false);
+  //const allFilled = formData.every(val => val !== "" && val !== null && val !== undefined);
+  useEffect(() => {
+    const b = parseInt(formData[1]) || 0;
+    const c = parseInt(formData[2]) || 0;
+    const d = parseInt(formData[3]) || 0;
+    const e = parseInt(formData[4]) || 0;
+    const f = parseInt(formData[5]) || 0;
+    const g = parseInt(formData[6]) || 0;
+    const summ= e + f + g;
+    const sum = b + c + d;
+
+    const updated = [...formData];
+    updated[8]= summ.toString();
+    updated[7] = sum.toString(); // index 7 = "h"
+    setFormData(updated);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData[1], formData[2], formData[3], formData[4],formData[5], formData[6]]);
+  
 
   const allFilled = formData.every(val => val !== "" && val !== null && val !== undefined);
 

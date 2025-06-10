@@ -6,18 +6,18 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button"
 
 const questions = [
-"1. Resource person:",
-"2. Total number of faculties that attended seminar:",
-"3. Total number of faculties:",
-"4. Total number of faculties who have attended workshop:",
-"5. Total number of faculties who have  KSET/NET:",
-"6. Total number of faculties who have completed Ph.d:",
-"7. Total number of faculties FDP:",
-"8. Total number of faculties EDP:",
-"9. Total number of faculties MMTP:",
-"10. Total number of faculties staff inducation:",
-"11. Total number of faculties MOOC:",
-"12. Link of  document:"
+"a. Resource person:",
+"b. Total number of faculties that attended seminar:",
+"c. Total number of faculties:",
+"d. Total number of faculties who have attended workshop:",
+"e. Total number of faculties who have  KSET/NET:",
+"f. Total number of faculties who have completed Ph.d:",
+"g. Total number of faculties FDP:",
+"h. Total number of faculties EDP:",
+"i. Total number of faculties MMTP:",
+"j. Total number of faculties staff inducation:",
+"k. Total number of faculties MOOC:",
+"l. Link of  document:"
 ];
 
 const Form10 = () => {

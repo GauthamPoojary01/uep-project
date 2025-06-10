@@ -6,10 +6,10 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button"
 
 const questions = [
-"1. Total number of students who cleared competative exam:",
-"2. Total number of papers presented:",
-"3. Total number of papers publications:",
-"4. Total number of events attended outside college:"
+"a. Total number of students who cleared competative exam:",
+"b. Total number of papers presented:",
+"c. Total number of papers publications:",
+"d. Total number of events attended outside college:"
 ];
 
 

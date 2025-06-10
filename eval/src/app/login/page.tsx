@@ -1,12 +1,12 @@
 'use client';
-//src/app/login/page.tsx
+
 import toast from 'react-hot-toast';
 import Image from 'next/image';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-const Login = () => {
+export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
@@ -14,45 +14,50 @@ const Login = () => {
   const router = useRouter();
 
   const handleLogin = async (e?: React.FormEvent) => {
-  if (e) e.preventDefault();
+    if (e) e.preventDefault();
 
-  if (!username || !password || !role) {
-    toast.error('Please fill all fields');
-    return;
-  }
-
-  setLoading(true);
-  try {
-    const response = await fetch('http://localhost:5000/api/users/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password, role }),
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      toast.success('Login successful!');
-      localStorage.setItem('user', JSON.stringify(data.user));
-      
-      if (role === 'Admin') {
-        router.push(`/admin/`);
-      } else if (role === 'Dean') {
-        router.push(`/dashboard/${username}`);
-      } else {
-        toast.error('Unknown role');
-      }
-    } else {
-      toast.error(data.message || 'Login failed');
+    if (!username || !role) {
+      toast.error('Please enter username and select role');
+      return;
     }
-  } catch (error) {
-    toast.error('Error connecting to server');
-    console.error(error);
-  } finally {
-    setLoading(false);
-  }
-};
 
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:5000/api/users/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password, role }),
+      });
+
+      const data = await response.json();
+
+      if (data.requiresPasswordSetup) {
+        toast('🔐 Please set your password');
+        router.push(`/set-password?user=${encodeURIComponent(username)}`);
+        return;
+      }
+
+      if (response.ok) {
+        toast.success('Login successful!');
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        if (role === 'Admin') {
+          router.push(`/admin/`);
+        } else if (role === 'Dean') {
+          router.push(`/dashboard/${username}`);
+        } else {
+          toast.error('Unknown role');
+        }
+      } else {
+        toast.error(data.message || 'Login failed');
+      }
+    } catch (error) {
+      toast.error('Error connecting to server');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center h-screen bg-gradient-to-b from-[#10074e] to-[#1E3C72] text-blue-900">
@@ -126,8 +131,4 @@ const Login = () => {
       </div>
     </div>
   );
-};
-
-export default Login;
-
-
+}

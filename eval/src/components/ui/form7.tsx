@@ -6,10 +6,10 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button"
 
 const questions = [
-  "1. Total Number of Faculties Involved:",
-  "2. Total Number of Consultancies:",
-  "3. Total Number of Beneficiaries:",
-  "4. Total Number of Revenue Generated:",
+  "a. Total Number of Faculties Involved:",
+  "b. Total Number of Consultancies:",
+  "c. Total Number of Beneficiaries:",
+  "d. Total Number of Revenue Generated:",
   
 ];
 

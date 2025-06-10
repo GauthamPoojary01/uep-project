@@ -2,18 +2,17 @@
 //eval/src/components/ui/form8.tsx
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { Button } from "@/components/ui/button"
 
 const questions = [
-"1. Total number of departments:",
-"2. Total number of MOUs:",
-"3. Total number of Institutions:",
-"4. Total number of Corporate house:",
-"5. Total number of national:",
-"6. Total number of International:",
-"7. Total number of activities in MOUs:",
-"8. Upload the link of the activities(Brochure, Geo tag Photo, Report):"
+"a. Total number of departments:",
+"b. Total number of Institutions:",
+"c. Total number of Corporate house:",
+"d. Total number of national:",
+"e. Total number of International:",
+"f. Total number of MOUs:",
+"g. Total number of activities in MOUs:",
 ];
 
 const Form8 = () => {
@@ -21,6 +20,18 @@ const Form8 = () => {
   const [isSaved, setIsSaved] = useState(false);
 
   const allFilled = formData.every(val => val !== "" && val !== null && val !== undefined);
+  useEffect(() => {
+    const b = parseInt(formData[1]) || 0;
+    const c = parseInt(formData[2]) || 0;
+    const d = parseInt(formData[3]) || 0;
+    const e = parseInt(formData[4]) || 0;
+    const sum = b + c + d + e;
+
+    const updated = [...formData];
+    updated[5] = sum.toString(); // index 5 = "g"
+    setFormData(updated);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData[1], formData[2], formData[3], formData[4]]);
 
 
   const handleChange = (index:number, value:string) => {

@@ -6,10 +6,10 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button"
 
 const questions = [
-"1. Total number of certificate courses:",
-"2. Total number of students enrolled:",
-"3. Total number of faculties offering:",
-"4. Total number of faculties:"
+"a. Total number of certificate courses:",
+"b. Total number of students enrolled:",
+"c. Total number of faculties offering:",
+"d. Total number of faculties:"
 
 ];
 

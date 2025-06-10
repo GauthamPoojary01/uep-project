@@ -6,15 +6,15 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button"
 
 const questions = [
-"1. Total intake:",
-"2. Total number of students admitted:",
-"3. Total number of students who dropped out this year:",
-"4. Total number of male students admitted:",
-"5. Total number of female students admitted:",
-"6. Total number of admissions from outside the state:",
-"7. Total number of admissions from inside the state:",
-"8. Total number of foreign students admitted:",
-"9. Link of the details:"
+"a. Total intake:",
+"b. Total number of students admitted:",
+"c. Total number of students who dropped out this year:",
+"d. Total number of male students admitted:",
+"e. Total number of female students admitted:",
+"f. Total number of admissions from outside the state:",
+"g. Total number of admissions from inside the state:",
+"h. Total number of foreign students admitted:",
+"i. Link of the details:"
 
 ];
 
