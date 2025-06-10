@@ -1,4 +1,4 @@
-// src/app/set-password/page.tsx
+// ✅ src/app/set-password/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -27,23 +27,22 @@ export default function SetPasswordPage() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/users/set-password", {
+      const res = await fetch("http://localhost:5000/api/users/set-password", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password: newPassword }),
       });
 
-      const result = await response.json();
-      if (response.ok) {
+      const data = await res.json();
+
+      if (res.ok) {
         setMessage("✅ Password set successfully. Redirecting to login...");
         setTimeout(() => router.push("/login"), 3000);
       } else {
-        setMessage(`❌ ${result.message || "Error setting password"}`);
+        setMessage(`❌ ${data.message || "Error setting password"}`);
       }
     } catch (err) {
-      setMessage("❌ Server error");
+      setMessage("❌ Server error. Please try again.");
     }
   };
 

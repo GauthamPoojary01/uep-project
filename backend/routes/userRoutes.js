@@ -11,6 +11,9 @@ const schoolController = require('../controllers/schoolController');
 router.post('/login', userController.login);
 router.post('/send-otp', otpController.sendOtp);
 router.post('/reset-password-otp', otpController.resetPasswordWithOtp);
+// userRoutes.js
+router.post('/set-password', userController.setPassword);
+
 
 
 

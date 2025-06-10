@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 const questions = [
   "b. Number of Faculties:",
   "c. Number of Faculties with PhD Holders:",
-  
   "d. Number of Faculties with NET/KSET :",
   "e. Number of Faculties without PhD/NET/KSET:",
   "f. Number of Faculties Pursuing PhD:"
