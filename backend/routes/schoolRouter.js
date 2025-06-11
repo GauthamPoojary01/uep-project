@@ -17,4 +17,29 @@ router.get('/get-all', async (req, res) => {
   }
 });
 
+router.delete('/delete/:sid', async (req, res) => {
+  const { sid } = req.params;
+  try {
+    // 🔍 Check if any dean is assigned to this school
+    const [dean] = await db.query('SELECT * FROM users WHERE sid = ?', [sid]);
+    if (dean.length > 0) {
+      return res.status(400).json({ error: 'Cannot delete. Dean is assigned to this school.' });
+    }
+
+    // 🔨 Proceed with deletion
+    const [result] = await db.query('DELETE FROM school_metadata WHERE sid = ?', [sid]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'School not found' });
+    }
+
+    res.json({ message: 'School deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting school:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
 module.exports = router;

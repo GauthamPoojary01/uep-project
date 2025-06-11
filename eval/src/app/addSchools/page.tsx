@@ -1,11 +1,12 @@
 'use client';
+//eval/src/app/addSchools/page.tsx
 
 import { useState, useEffect } from "react";
 
 const SchoolsPage = () => {
   const [schoolName, setSchoolName] = useState('');
   const [message, setMessage] = useState('');
-  const [existingSchools, setExistingSchools] = useState<{ school_name: string }[]>([]);
+  const [existingSchools, setExistingSchools] = useState<{ sid: number; school_name: string }[]>([]);
 
   const addSchool = async () => {
     if (!schoolName.trim()) return;
@@ -31,14 +32,34 @@ const SchoolsPage = () => {
     }
   };
 
+  const deleteSchool = async (sid: number) => {
+    if (!confirm('Are you sure you want to delete this school?')) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/schools/delete/${sid}`, {
+        method: 'DELETE'
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setMessage('✅ School deleted successfully');
+        fetchExistingSchools();
+      } else {
+        setMessage(`❌ ${data.error}`);
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage('❌ Error deleting school');
+    }
+  };
+
   const fetchExistingSchools = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/users/schools');
+      const res = await fetch('http://localhost:5000/api/schools/metadata');
       const data = await res.json();
-      console.log("Fetched schools:", data);
       setExistingSchools(data);
     } catch (err) {
-      console.error('Error fetching existing schools:', err);
+      console.error('Error fetching schools:', err);
     }
   };
 
@@ -64,13 +85,21 @@ const SchoolsPage = () => {
       </button>
       {message && <p className="mt-2 text-sm">{message}</p>}
 
-      <h2 className="mt-6 text-lg font-semibold">Existing Schools Assigned to Deans</h2>
-      <ul className="list-disc list-inside text-sm text-gray-700 mt-2">
+      <h2 className="mt-6 text-lg font-semibold">All Existing Schools</h2>
+      <ul className="text-sm text-gray-700 mt-2 space-y-2">
         {existingSchools.length === 0 ? (
-          <li>No schools assigned yet.</li>
+          <li>No schools found.</li>
         ) : (
-          existingSchools.map((school, idx) => (
-            <li key={idx}>{school.school_name}</li>
+          existingSchools.map((school) => (
+            <li key={school.sid} className="flex justify-between items-center">
+              <span>{school.school_name}</span>
+              <button
+                onClick={() => deleteSchool(school.sid)}
+                className="text-red-600 text-xs hover:underline"
+              >
+                Remove
+              </button>
+            </li>
           ))
         )}
       </ul>
