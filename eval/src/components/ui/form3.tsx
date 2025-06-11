@@ -1,112 +1,161 @@
-//eval/src/components/ui/form3.tsx
 'use client';
 
+import { useEffect, useState } from 'react';
+import { Button } from "@/components/ui/button";
 import Link from 'next/link';
-import { useState } from 'react';
-import { Button } from "@/components/ui/button"
-
-const questions = [
-  "a. Total Number of Associate Professor:",
-  "b. Total Number of Assistant Professor:",
-  "c. Total Number of Professor in Practice:",
-];
+import toast from "react-hot-toast";
 
 const Form3 = () => {
-  const [formData, setFormData] = useState(Array(questions.length).fill(''));
+  const [formData, setFormData] = useState({
+    associate_professors: '',
+    assistant_professors: '',
+    professors_in_practice: ''
+  });
   const [isSaved, setIsSaved] = useState(false);
+  const [status, setStatus] = useState('');
+  const [readOnly, setReadOnly] = useState(false);
 
-  const allFilled = formData.every(val => val !== "" && val !== null && val !== undefined);
+  const fetchSavedData = async () => {
+    const user = JSON.parse(localStorage.getItem("user") || '{}');
+    if (!user?.sid) return;
 
-  const handleChange = (index: number, value: string) => {
-  const updated = [...formData];
-  updated[index] = value;
-  setFormData(updated);
-  setIsSaved(false);
+    try {
+      const res = await fetch("http://localhost:5000/api/forms/form3?sid=" + user.sid);
+      if (!res.ok) return;
+      const data = await res.json();
+      setFormData(data);
+      setStatus(data.status);
+      if (data.status === 'submitted' || data.status === 'approved') setReadOnly(true);
+      if (data.status === 'rejected') toast.error("Your previous submission was rejected. Please correct it.");
+    } catch (err) {
+      console.error(err);
     }
-  
+  };
 
-  const handleSave = () => setIsSaved(true);
+  useEffect(() => {
+    fetchSavedData();
+  }, []);
 
-  const totalProfessors = formData.reduce((sum, val) => sum + (parseInt(val, 10) || 0), 0);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setIsSaved(false);
+  };
+
+  const handleSave = async () => {
+    const user = JSON.parse(localStorage.getItem("user") || '{}');
+    try {
+      const res = await fetch("http://localhost:5000/api/forms/form3/save", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...formData, sid: user.sid })
+      });
+      if (res.ok) {
+        toast.success("Saved successfully");
+        setIsSaved(true);
+        setStatus('draft');
+      } else {
+        toast.error("Failed to save");
+      }
+    } catch (err) {
+      toast.error("Server error");
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!isSaved) return toast("Save before submitting");
+    const user = JSON.parse(localStorage.getItem("user") || '{}');
+    try {
+      const res = await fetch("http://localhost:5000/api/forms/form3/submit", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sid: user.sid })
+      });
+      if (res.ok) {
+        toast.success("Submitted successfully");
+        setStatus("submitted");
+        setReadOnly(true);
+      } else {
+        toast.error("Submission failed");
+      }
+    } catch (err) {
+      toast.error("Server error");
+    }
+  };
+
+  const totalProfessors =
+    (parseInt(formData.associate_professors) || 0) +
+    (parseInt(formData.assistant_professors) || 0) +
+    (parseInt(formData.professors_in_practice) || 0);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-  // Block: e, E, +, -, .
-  if (["e", "E", "+", "-", "."].includes(e.key)) {
-    e.preventDefault();
-  }
-};
-
+    if (["e", "E", "+", "-", "."].includes(e.key)) {
+      e.preventDefault();
+    }
+  };
 
   return (
     <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">CRITERIA 3: STAFF PROFILE</h1>
-      <form className="space-y-4" onSubmit={e => { e.preventDefault(); }}>
-        {questions.map((q, i) => (
-          <div key={i}>
-            <label className="block mb-1">{q}</label>
-            <input
-              type="numeric"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              min="0"
-              maxLength={2}
-              value={formData[i]}
-              onChange={e => handleChange(i, e.target.value)}
-              onKeyDown={handleKeyDown}
-              required
-              className="w-full border border-gray-400 px-3 py-2 rounded focus:outline-none focus:border-blue-500"
-            />
-          </div>
-        ))}
-        <label className='block mb-1'>d. Total Number of Professor:</label>
-        <input
-          className='w-full border border-gray-400 px-3 py-2 rounded focus:outline-none focus:border-blue-500'
-          type='number'
-          maxLength={3}
-          value={totalProfessors}
-          readOnly
-          tabIndex={-1}
-        />
-        <div className="flex gap-4 mt-6 items-center">
-          <Link href="/schl_prg" className="flex">
-            <Button
-              type="button"
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700"
-            >
-              Previous
-            </Button>
-          </Link>
-          <div className="flex-1 flex justify-center gap-4">
-            <button
-              type="button"
-              onClick={handleSave}
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-            >
-              Save
-            </button>
-            <button
-              type="submit"
-              className={`bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-opacity duration-200 relative ${
-                (!isSaved ||
-                  formData.some(val => val === "" || val === null || val === undefined))
-                  ? "opacity-50 cursor-not-allowed"
-                  : "opacity-100"
-              }`}
-              disabled={
-                !isSaved ||
-                formData.some(val => val === "" || val === null || val === undefined)
-              }
-              title={
-                !isSaved ||
-                formData.some(val => val === "" || val === null || val === undefined)
-                  ? "Fill out all fields and save"
-                  : ""
-              }
-            >
-              Submit
-            </button>
-          </div>
-          <Link href="/research" className="flex">
+      <h1 className="text-2xl font-bold mb-4">3. STAFF PROFILE</h1>
+
+      <label>a. Total Number of Associate Professor:</label>
+      <input
+        type="number"
+        name="associate_professors"
+        value={formData.associate_professors}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        disabled={readOnly}
+        className="w-full border px-3 py-2 rounded mb-3"
+      />
+
+      <label>b. Total Number of Assistant Professor:</label>
+      <input
+        type="number"
+        name="assistant_professors"
+        value={formData.assistant_professors}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        disabled={readOnly}
+        className="w-full border px-3 py-2 rounded mb-3"
+      />
+
+      <label>c. Total Number of Professor in Practice:</label>
+      <input
+        type="number"
+        name="professors_in_practice"
+        value={formData.professors_in_practice}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        disabled={readOnly}
+        className="w-full border px-3 py-2 rounded mb-3"
+      />
+
+      <label>d. Total Number of Professor:</label>
+      <input
+        type="number"
+        value={totalProfessors}
+        readOnly
+        tabIndex={-1}
+        className="w-full border px-3 py-2 rounded mb-3 bg-gray-100"
+      />
+
+      <div className="flex gap-4 mt-4">
+        <button
+          onClick={handleSave}
+          disabled={readOnly}
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          Save
+        </button>
+        <button
+          onClick={handleSubmit}
+          disabled={!isSaved || readOnly}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Submit
+        </button>
+      </div>
+      <Link href="/research" className="flex">
             <Button
               type="button"
               className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700"
@@ -114,12 +163,12 @@ const Form3 = () => {
               Next
             </Button>
           </Link>
-        </div>
-        {!isSaved && (
-          <p className="text-purple-600 mt-2">Please save your data before submitting or leaving the page.</p>
-        )}
-      </form>
+
+      {status === 'rejected' && (
+        <p className="mt-2 text-sm text-red-600">This form was rejected. Please update and resubmit.</p>
+      )}
     </div>
   );
 };
+
 export default Form3;

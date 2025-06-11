@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
+import Link from 'next/link';
 
 const Form1 = () => {
   const [formData, setFormData] = useState({
@@ -165,7 +166,14 @@ const Form1 = () => {
           Submit
         </button>
       </div>
-
+<Link href="/staff_pf" className="flex">
+            <Button
+              type="button"
+              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700"
+            >
+              Next
+            </Button>
+          </Link>
       {status === 'rejected' && (
         <p className="mt-2 text-sm text-red-600">This form was rejected. Please update and resubmit.</p>
       )}
