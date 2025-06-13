@@ -1,4 +1,4 @@
-// src/app/criteria/[id]/page.tsx
+// src/app/criteria/[id]/page.tsx or other pages like schl_prg/page.tsx
 "use client";
 
 import { useParams } from "next/navigation";
@@ -27,12 +27,19 @@ const formMap: Record<string, any> = {
 export default function CriteriaPage() {
   const { id } = useParams();
   const [username, setUsername] = useState("");
+  const [department, setDepartment] = useState("");
   const FormComponent = formMap[id as string];
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
-    if (user.username) {
-      setUsername(encodeURIComponent(user.username));
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const user = JSON.parse(storedUser);
+        if (user.username) setUsername(encodeURIComponent(user.username));
+        if (user.department) setDepartment(user.department);
+      } catch (err) {
+        console.error("Failed to parse user info", err);
+      }
     }
   }, []);
 
@@ -48,7 +55,7 @@ export default function CriteriaPage() {
           className="text-left text-white text-[25px] font-bold justify-center items-center font-sans ml-[35vw] mb-1 mt-3 tracking-wide relative"
           style={{ textShadow: "0 4px 12px rgba(0, 0, 0, 0.2)" }}
         >
-          SCHOOL CRITERIA FORM {id}
+          {department.toUpperCase()} 
         </p>
         <div className="flex justify-center items-center">
           {username && <Aside username={username} />}

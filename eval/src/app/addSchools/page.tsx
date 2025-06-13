@@ -1,12 +1,15 @@
+// Fix for: "Each child in a list should have a unique 'key' prop."
+// File: eval/src/app/addSchools/page.tsx
+
 'use client';
-//eval/src/app/addSchools/page.tsx
 
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 
 const SchoolsPage = () => {
   const [schoolName, setSchoolName] = useState('');
   const [message, setMessage] = useState('');
-  const [existingSchools, setExistingSchools] = useState<{ sid: number; school_name: string }[]>([]);
+  const [schools, setSchools] = useState<{ sid: number; school_name: string }[]>([]);
 
   const addSchool = async () => {
     if (!schoolName.trim()) return;
@@ -22,7 +25,7 @@ const SchoolsPage = () => {
       if (res.ok) {
         setMessage('✅ School added successfully');
         setSchoolName('');
-        fetchExistingSchools();
+        fetchSchools();
       } else {
         setMessage(`❌ ${data.error}`);
       }
@@ -43,7 +46,7 @@ const SchoolsPage = () => {
       const data = await res.json();
       if (res.ok) {
         setMessage('✅ School deleted successfully');
-        fetchExistingSchools();
+        fetchSchools();
       } else {
         setMessage(`❌ ${data.error}`);
       }
@@ -53,18 +56,25 @@ const SchoolsPage = () => {
     }
   };
 
-  const fetchExistingSchools = async () => {
+  const fetchSchools = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/schools/metadata');
+      const res = await fetch('http://localhost:5000/api/schools/get-all');
       const data = await res.json();
-      setExistingSchools(data);
-    } catch (err) {
-      console.error('Error fetching schools:', err);
+
+      if (Array.isArray(data)) {
+        setSchools(data);
+      } else {
+        console.error('Unexpected response format:', data);
+        setSchools([]);
+      }
+    } catch (error) {
+      console.error('Error fetching schools:', error);
+      setSchools([]);
     }
   };
 
   useEffect(() => {
-    fetchExistingSchools();
+    fetchSchools();
   }, []);
 
   return (
@@ -87,21 +97,17 @@ const SchoolsPage = () => {
 
       <h2 className="mt-6 text-lg font-semibold">All Existing Schools</h2>
       <ul className="text-sm text-gray-700 mt-2 space-y-2">
-        {existingSchools.length === 0 ? (
-          <li>No schools found.</li>
-        ) : (
-          existingSchools.map((school) => (
-            <li key={school.sid} className="flex justify-between items-center">
-              <span>{school.school_name}</span>
-              <button
-                onClick={() => deleteSchool(school.sid)}
-                className="text-red-600 text-xs hover:underline"
-              >
-                Remove
-              </button>
-            </li>
-          ))
-        )}
+        {schools.map((school) => (
+          <li key={school.sid} className="flex justify-between items-center">
+            <span>{school.school_name}</span>
+            <button
+              onClick={() => deleteSchool(school.sid)}
+              className="text-red-600 text-xs hover:underline"
+            >
+              Remove
+            </button>
+          </li>
+        ))}
       </ul>
     </div>
   );

@@ -166,7 +166,7 @@ const Form1 = () => {
           Submit
         </button>
       </div>
-<Link href="/staff_pf" className="flex">
+<Link href="/schl_prg" className="flex">
             <Button
               type="button"
               className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700"

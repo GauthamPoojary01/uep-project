@@ -106,15 +106,16 @@ router.post('/update', async (req, res) => {
   }
 });
 
-router.get('/schools', async (req, res) => {
+router.get('/get-all', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT DISTINCT department AS name FROM users WHERE role = "Dean"');
+    const [rows] = await db.query('SELECT sid, school_name FROM school_metadata');
     res.json(rows);
   } catch (err) {
     console.error('Error fetching schools:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 router.get('/unassigned-schools', async (req, res) => {
   try {

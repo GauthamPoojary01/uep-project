@@ -1,4 +1,3 @@
-//eval/src/app/mous/page.tsx
 "use client";
 import { useEffect, useState } from "react";
 import Headings from "@/components/heading";
@@ -7,11 +6,15 @@ import Aside from "@/components/aside";
 
 export default function Home() {
   const [username, setUsername] = useState("");
+  const [department, setDepartment] = useState("SCHOOL NAME");
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     if (user.username) {
       setUsername(encodeURIComponent(user.username));
+    }
+    if (user.department) {
+      setDepartment(user.department);
     }
   }, []);
 
@@ -25,7 +28,7 @@ export default function Home() {
             textShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
           }}
         >
-          SCHOOL OF INFORMATION SCIENCE AND TECHNOLOGY
+          {department ? department.toUpperCase() : "Loading Department..."}
         </p>
         <div className="flex justify-center items-center ">
           {username && <Aside username={username} />}

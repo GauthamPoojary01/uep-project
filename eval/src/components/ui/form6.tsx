@@ -107,37 +107,39 @@ const Form6 = () => {
     <div className="max-w-xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">CRITERIA 6: RESEARCH PROJECTS</h1>
       <form className="space-y-4" onSubmit={e => e.preventDefault()}>
-        {[{
-          label: 'a. Number of Faculties Involved:', name: 'total_faculty'
-        }, {
-          label: 'b. Total Number of Projects under Government Category:', name: 'gov_projects'
-        }, {
-          label: 'c. Total Number of Projects under Non-Government Category:', name: 'non_gov_projects'
-        }, {
-          label: 'd. Total Number of Projects under MJES Category:', name: 'mjes_projects'
-        }, {
-          label: 'e. Total Amount Allocated to Government Category:', name: 'gov_amount'
-        }, {
-          label: 'f. Total Amount Allocated to Non-Government Category:', name: 'non_gov_amount'
-        }, {
-          label: 'g. Total Amount Allocated to MJES Category:', name: 'mjes_amount'
-        }, {
-          label: 'h. Total Number of Projects:', name: 'total_projects'
-        }, {
-          label: 'i. Total Amount Allocated to All Categories:', name: 'total_amount'
-        }].map(({ label, name }) => (
-          <div key={name}>
-            <label>{label}</label>
-            <input
-              type="number"
-              name={name}
-              value={formData[name as keyof typeof formData] as string}
-              onChange={handleChange}
-              disabled={readOnly || name === 'total_projects' || name === 'total_amount'}
-              className="w-full border px-3 py-2 rounded mb-3"
-            />
-          </div>
-        ))}
+        <div className="flex flex-col gap-4 font-normal mt-1 mb-1 ml-1 max-h-[500px] overflow-y-scroll pr-2">
+          {[{
+            label: 'a. Number of Faculties Involved:', name: 'total_faculty'
+          }, {
+            label: 'b. Total Number of Projects under Government Category:', name: 'gov_projects'
+          }, {
+            label: 'c. Total Number of Projects under Non-Government Category:', name: 'non_gov_projects'
+          }, {
+            label: 'd. Total Number of Projects under MJES Category:', name: 'mjes_projects'
+          }, {
+            label: 'e. Total Amount Allocated to Government Category:', name: 'gov_amount'
+          }, {
+            label: 'f. Total Amount Allocated to Non-Government Category:', name: 'non_gov_amount'
+          }, {
+            label: 'g. Total Amount Allocated to MJES Category:', name: 'mjes_amount'
+          }, {
+            label: 'h. Total Number of Projects:', name: 'total_projects'
+          }, {
+            label: 'i. Total Amount Allocated to All Categories:', name: 'total_amount'
+          }].map(({ label, name }) => (
+            <div key={name}>
+              <label>{label}</label>
+              <input
+                type="number"
+                name={name}
+                value={formData[name as keyof typeof formData] as string}
+                onChange={handleChange}
+                disabled={readOnly || name === 'total_projects' || name === 'total_amount'}
+                className="w-full border px-3 py-2 rounded mb-3"
+              />
+            </div>
+          ))}
+        </div>
 
         <div className="flex gap-4 mt-6 items-center">
           <Link href="/phd">

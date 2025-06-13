@@ -52,7 +52,7 @@ export default function Dashboard() {
           className="text-left text-white text-[20px] font-bold justify-center items-center font-sans ml-[35vw] mt-2 tracking-wide relative"
           style={{ textShadow: "0 4px 12px rgba(0, 0, 0, 0.2)" }}
         >
-          {department || "Loading..."}
+          {department ? department.toUpperCase() : "Loading Department..."} 
         </p>
         <div className="flex justify-center items-center gap-4">
           <Aside username={username as string} />

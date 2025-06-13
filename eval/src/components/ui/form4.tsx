@@ -48,7 +48,7 @@ const Form4 = () => {
               status: data.status,
             });
 
-            if (['submitted', 'approved'].includes(data.status)) {
+            if (["submitted", "approved"].includes(data.status)) {
               setReadOnly(true);
             }
           }
@@ -86,30 +86,32 @@ const Form4 = () => {
     <div className="max-w-xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">CRITERIA 4: RESEARCH</h1>
       <form className="space-y-4" onSubmit={e => e.preventDefault()}>
-        {[
-          { label: 'a. Total Number of Scopus', name: 'scopus' },
-          { label: 'b. Total Number of WOS', name: 'wos' },
-          { label: 'c. Total Number of UGC Care', name: 'ugc_care' },
-          { label: 'd. Total Number of H-Index', name: 'h_index' },
-          { label: 'e. Total Number of Citation', name: 'citation' },
-          { label: 'f. Total Number of Awards', name: 'awards' },
-          { label: 'g. Total Number of Books', name: 'books' },
-          { label: 'h. Total Number of Chapters Published', name: 'chapters_published' },
-          { label: 'i. Total Number of Paper Presented', name: 'paper_presented' }
-        ].map(({ label, name }) => (
-          <div key={name}>
-            <label>{label}:</label>
-            <input
-              type="number"
-              name={name}
-              value={formData[name as keyof typeof formData] as string}
-              onChange={handleChange}
-              onKeyDown={handleKeyDown}
-              disabled={readOnly}
-              className="w-full border px-3 py-2 rounded mb-3"
-            />
-          </div>
-        ))}
+        <div className="flex flex-col gap-4 font-normal mt-1 mb-1 ml-5 h-120 max-h-[500px] overflow-y-scroll pr-2">
+          {[ 
+            { label: 'a. Total Number of Scopus', name: 'scopus' },
+            { label: 'b. Total Number of WOS', name: 'wos' },
+            { label: 'c. Total Number of UGC Care', name: 'ugc_care' },
+            { label: 'd. Total Number of H-Index', name: 'h_index' },
+            { label: 'e. Total Number of Citation', name: 'citation' },
+            { label: 'f. Total Number of Awards', name: 'awards' },
+            { label: 'g. Total Number of Books', name: 'books' },
+            { label: 'h. Total Number of Chapters Published', name: 'chapters_published' },
+            { label: 'i. Total Number of Paper Presented', name: 'paper_presented' }
+          ].map(({ label, name }) => (
+            <div key={name}>
+              <label>{label}:</label>
+              <input
+                type="number"
+                name={name}
+                value={formData[name as keyof typeof formData] as string}
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+                disabled={readOnly}
+                className="w-full border px-3 py-2 rounded mb-3"
+              />
+            </div>
+          ))}
+        </div>
 
         <div className="flex gap-4 mt-6 items-center">
           <Link href="/staff_pf">
