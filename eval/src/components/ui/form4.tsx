@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
-import axios from 'axios';
+import toast from "react-hot-toast";
 
 const Form4 = () => {
   const [formData, setFormData] = useState({
@@ -22,39 +22,44 @@ const Form4 = () => {
   });
 
   const [isSaved, setIsSaved] = useState(false);
+  const [status, setStatus] = useState('');
   const [readOnly, setReadOnly] = useState(false);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (user.sid) {
-      setFormData(prev => ({ ...prev, sid: user.sid }));
+    if (!user?.sid) return;
 
-      axios.get(`http://localhost:5000/api/forms/form4/${user.sid}`)
-        .then(res => {
-          if (res.data) {
-            const data = res.data;
-            setFormData({
-              sid: data.sid,
-              scopus: data.scopus || '',
-              wos: data.wos || '',
-              ugc_care: data.total_no_of_ugc_care || '',
-              h_index: data.total_no_of_h_index || '',
-              citation: data.total_no_of_citation || '',
-              awards: data.total_no_of_awards || '',
-              books: data.total_no_of_books_chapter_published || '',
-              chapters_published: data.total_no_of_link_research || '',
-              paper_presented: data.total_no_of_paper_published || '',
-              currennt_year: data.currennt_year,
-              status: data.status,
-            });
+    setFormData(prev => ({ ...prev, sid: user.sid }));
 
-            if (["submitted", "approved"].includes(data.status)) {
-              setReadOnly(true);
-            }
-          }
-        })
-        .catch(err => console.error('Fetch error:', err));
-    }
+    fetch(`http://localhost:5000/api/forms/form4/${user.sid}`)
+      .then(res => {
+        if (!res.ok) return;
+        return res.json();
+      })
+      .then(data => {
+        if (!data) return;
+        setFormData({
+          sid: data.sid,
+          scopus: data.scopus || '',
+          wos: data.wos || '',
+          ugc_care: data.total_no_of_ugc_care || '',
+          h_index: data.total_no_of_h_index || '',
+          citation: data.total_no_of_citation || '',
+          awards: data.total_no_of_awards || '',
+          books: data.total_no_of_books_chapter_published || '',
+          chapters_published: data.total_no_of_link_research || '',
+          paper_presented: data.total_no_of_paper_published || '',
+          currennt_year: data.currennt_year || new Date().getFullYear(),
+          status: data.status || 'draft',
+        });
+
+        if (["submitted", "approved"].includes(data.status)) {
+          setReadOnly(true);
+        }
+
+        if (data.status === 'rejected') toast.error("Previous submission was rejected. Please correct and resubmit.");
+      })
+      .catch(err => console.error('Fetch error:', err));
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,17 +72,45 @@ const Form4 = () => {
     if (e.key === '-') e.preventDefault();
   };
 
-  const handleSave = () => {
-    axios.post('http://localhost:5000/api/forms/form4', formData)
-      .then(() => setIsSaved(true))
-      .catch(err => console.error('Save error:', err));
+  const handleSave = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/forms/form4', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      if (res.ok) {
+        toast.success("Saved successfully");
+        setIsSaved(true);
+      } else {
+        toast.error("Save failed");
+      }
+    } catch (err) {
+      toast.error("Server error");
+    }
   };
 
-  const handleSubmit = () => {
-    const updatedData = { ...formData, status: 'submitted' };
-    axios.post('http://localhost:5000/api/forms/form4', updatedData)
-      .then(() => setIsSaved(true))
-      .catch(err => console.error('Submit error:', err));
+  const handleSubmit = async () => {
+    if (!isSaved) return toast("Save before submitting");
+
+    try {
+      const res = await fetch('http://localhost:5000/api/forms/form4', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...formData, status: 'submitted' })
+      });
+
+      if (res.ok) {
+        toast.success("Submitted successfully");
+        setIsSaved(true);
+        setReadOnly(true);
+      } else {
+        toast.error("Submit failed");
+      }
+    } catch (err) {
+      toast.error("Server error");
+    }
   };
 
   const allFilled = Object.values(formData).every(val => val !== '');
@@ -118,15 +151,14 @@ const Form4 = () => {
             <Button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Previous</Button>
           </Link>
           <div className="flex-1 flex justify-center gap-4">
-            <button type="button" onClick={handleSave} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            <button type="button" onClick={handleSave} disabled={readOnly} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
               Save
             </button>
             <button
               type="submit"
               onClick={handleSubmit}
-              className={`bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 ${(!isSaved || !allFilled) ? "opacity-50 cursor-not-allowed" : ""}`}
-              disabled={!isSaved || !allFilled}
-              title={!isSaved || !allFilled ? "Fill and save before submitting" : ""}
+              disabled={!isSaved || readOnly || !allFilled}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               Submit
             </button>

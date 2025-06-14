@@ -9,7 +9,7 @@ router.post('/add', schoolController.addSchool);
 // ✅ FIXED: get-all route
 router.get('/get-all', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT school_name FROM school_metadata');
+    const [rows] = await db.query('SELECT sid, school_name FROM school_metadata');
     res.json(rows);
   } catch (err) {
     console.error('Error fetching schools:', err);

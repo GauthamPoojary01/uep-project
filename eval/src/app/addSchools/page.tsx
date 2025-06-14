@@ -1,10 +1,5 @@
-// Fix for: "Each child in a list should have a unique 'key' prop."
-// File: eval/src/app/addSchools/page.tsx
-
 'use client';
-
 import { useState, useEffect } from "react";
-import toast from "react-hot-toast";
 
 const SchoolsPage = () => {
   const [schoolName, setSchoolName] = useState('');
@@ -46,7 +41,7 @@ const SchoolsPage = () => {
       const data = await res.json();
       if (res.ok) {
         setMessage('✅ School deleted successfully');
-        fetchSchools();
+        setSchools(prev => prev.filter(school => school.sid !== sid));
       } else {
         setMessage(`❌ ${data.error}`);
       }
@@ -60,6 +55,7 @@ const SchoolsPage = () => {
     try {
       const res = await fetch('http://localhost:5000/api/schools/get-all');
       const data = await res.json();
+      console.log('Fetched schools:', data);
 
       if (Array.isArray(data)) {
         setSchools(data);
