@@ -1,9 +1,24 @@
 // backend/routes/form9Router.js
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
+const pool = require('../db');
 
-// POST (insert or update) form9 data
+// Fetch existing data for a given sid
+router.get('/:sid', async (req, res) => {
+  const { sid } = req.params;
+  try {
+    const [rows] = await pool.query('SELECT * FROM school_activites WHERE sid = ?', [sid]);
+    if (rows.length > 0) {
+      return res.json(rows[0]);
+    }
+    return res.json(null);
+  } catch (error) {
+    console.error('Error fetching form9:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Save or update form9 data
 router.post('/', async (req, res) => {
   const {
     sid,
@@ -22,15 +37,13 @@ router.post('/', async (req, res) => {
     total_research_methodology_events,
     total_entrepreneurship_events,
     total_skill_development_events,
-    current_year,
-    status
+    status = 'draft'
   } = req.body;
 
   try {
-    const [existing] = await db.query('SELECT * FROM school_activites WHERE sid = ?', [sid]);
-
+    const [existing] = await pool.query('SELECT * FROM school_activites WHERE sid = ?', [sid]);
     if (existing.length > 0) {
-      await db.query(
+      await pool.query(
         `UPDATE school_activites SET
           no_of_guest_talk = ?,
           no_of_alumni_interaction = ?,
@@ -47,8 +60,9 @@ router.post('/', async (req, res) => {
           research_methodology = ?,
           entrepreneurship = ?,
           skill_development = ?,
-          current_year = ?,
-          status = ?
+          current_year = YEAR(CURDATE()),
+          status = ?,
+          rejection_reason = NULL
         WHERE sid = ?`,
         [
           total_guest_talks,
@@ -66,13 +80,12 @@ router.post('/', async (req, res) => {
           total_research_methodology_events,
           total_entrepreneurship_events,
           total_skill_development_events,
-          current_year,
           status,
           sid
         ]
       );
     } else {
-      await db.query(
+      await pool.query(
         `INSERT INTO school_activites (
           sid,
           no_of_guest_talk,
@@ -92,7 +105,7 @@ router.post('/', async (req, res) => {
           skill_development,
           current_year,
           status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, YEAR(CURDATE()), ?)`,
         [
           sid,
           total_guest_talks,
@@ -110,33 +123,15 @@ router.post('/', async (req, res) => {
           total_research_methodology_events,
           total_entrepreneurship_events,
           total_skill_development_events,
-          current_year,
           status
         ]
       );
     }
-
-    res.status(200).json({ message: 'Form 9 data saved successfully' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Database error' });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error saving form9:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-// GET form9 data by SID
-router.get('/:sid', async (req, res) => {
-  const { sid } = req.params;
-  try {
-    const [rows] = await db.query('SELECT * FROM school_activites WHERE sid = ?', [sid]);
-    if (rows.length === 0) return res.status(404).json({ message: 'Data not found' });
-    res.json(rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-// Approve form9
-
 
 module.exports = router;

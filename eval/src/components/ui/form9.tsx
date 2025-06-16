@@ -5,25 +5,26 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 
-const Form9 = () => {
-  const [formData, setFormData] = useState({
-    total_guest_talks: '',
-    total_alumni_interactions: '',
-    total_industrial_visits: '',
-    total_study_tours: '',
-    total_fests: '',
-    total_fdps: '',
-    total_edps: '',
-    total_mdps: '',
-    total_conferences: '',
-    total_workshops: '',
-    total_national_seminars: '',
-    total_ipr_events: '',
-    total_research_methodology_events: '',
-    total_entrepreneurship_events: '',
-    total_skill_development_events: ''
-  });
+const defaultFormData = {
+  total_guest_talks: '',
+  total_alumni_interactions: '',
+  total_industrial_visits: '',
+  total_study_tours: '',
+  total_fests: '',
+  total_fdps: '',
+  total_edps: '',
+  total_mdps: '',
+  total_conferences: '',
+  total_workshops: '',
+  total_national_seminars: '',
+  total_ipr_events: '',
+  total_research_methodology_events: '',
+  total_entrepreneurship_events: '',
+  total_skill_development_events: ''
+};
 
+const Form9 = () => {
+  const [formData, setFormData] = useState({ ...defaultFormData });
   const [isSaved, setIsSaved] = useState(false);
   const [readOnly, setReadOnly] = useState(false);
 
@@ -34,7 +35,11 @@ const Form9 = () => {
         .then((res) => res.json())
         .then((data) => {
           if (data) {
-            setFormData(data);
+            const safeData = { ...defaultFormData };
+            Object.keys(defaultFormData).forEach((key) => {
+              safeData[key] = data[key] ?? '';
+            });
+            setFormData(safeData);
             if (["submitted", "approved"].includes(data.status)) {
               setReadOnly(true);
             }
@@ -103,7 +108,7 @@ const Form9 = () => {
               <input
                 type="number"
                 name={name}
-                value={formData[name as keyof typeof formData] as string}
+                value={formData[name as keyof typeof formData] ?? ''}
                 onChange={handleChange}
                 disabled={readOnly}
                 className="w-full border px-3 py-2 rounded mb-3 bg-white disabled:bg-gray-100"
