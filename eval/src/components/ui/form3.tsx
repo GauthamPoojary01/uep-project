@@ -41,25 +41,41 @@ const Form3 = () => {
     setIsSaved(false);
   };
 
-  const handleSave = async () => {
-    const user = JSON.parse(localStorage.getItem("user") || '{}');
-    try {
-      const res = await fetch("http://localhost:5000/api/forms/form3/save", {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, sid: user.sid })
-      });
-      if (res.ok) {
-        toast.success("Saved successfully");
-        setIsSaved(true);
-        setStatus('draft');
-      } else {
-        toast.error("Failed to save");
-      }
-    } catch (err) {
-      toast.error("Server error");
+  // ✅ Key fix: Backend expects full structure in `data` field
+// But frontend was sending flat structure like: { assistant_professors, sid }
+// We need to wrap formData inside `data` in the POST body
+
+const handleSave = async () => {
+  const user = JSON.parse(localStorage.getItem("user") || '{}');
+  try {
+    const res = await fetch("http://localhost:5000/api/forms/form3/save", {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sid: user.sid,
+        data: {
+          total_no_of_associate_professor: parseInt(formData.associate_professors) || 0,
+          total_no_of_assistant_professor: parseInt(formData.assistant_professors) || 0,
+          total_no_of_professor_of_practice: parseInt(formData.professors_in_practice) || 0,
+          total_no_of_professor: totalProfessors,
+          status: 'draft',
+          rejection_reason: null
+        }
+      })
+    });
+
+    if (res.ok) {
+      toast.success("Saved successfully");
+      setIsSaved(true);
+      setStatus('draft');
+    } else {
+      toast.error("Failed to save");
     }
-  };
+  } catch (err) {
+    toast.error("Server error");
+  }
+};
+
 
   const handleSubmit = async () => {
     if (!isSaved) return toast("Save before submitting");
