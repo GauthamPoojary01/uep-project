@@ -1,3 +1,4 @@
+// src/components/ui/form9.tsx
 'use client';
 
 import Link from 'next/link';
@@ -50,21 +51,24 @@ const Form9 = () => {
   };
 
   const handleSave = () => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const payload = { sid: user.sid, ...formData, current_year: new Date().getFullYear(), status: 'saved' };
     fetch("http://localhost:5000/api/forms/form9", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(payload),
     })
       .then(() => setIsSaved(true))
       .catch((err) => console.error(err));
   };
 
   const handleSubmit = () => {
-    const updatedData = { ...formData, status: 'submitted' };
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const payload = { sid: user.sid, ...formData, current_year: new Date().getFullYear(), status: 'submitted' };
     fetch("http://localhost:5000/api/forms/form9", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedData),
+      body: JSON.stringify(payload),
     })
       .then(() => setIsSaved(true))
       .catch((err) => console.error(err));

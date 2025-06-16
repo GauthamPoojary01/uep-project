@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { Button } from "@/components/ui/button"
+import { useEffect, useState, ChangeEvent } from 'react';
+import { Button } from "@/components/ui/button";
 
 const Form13 = () => {
   const [formData, setFormData] = useState({
@@ -14,7 +14,7 @@ const Form13 = () => {
     outside_state_admissions: '',
     inside_state_admissions: '',
     foreign_students_admitted: '',
-    details_link: ''
+    details_link: '',
   });
 
   const [isSaved, setIsSaved] = useState(false);
@@ -27,7 +27,17 @@ const Form13 = () => {
         .then(res => res.json())
         .then(data => {
           if (data) {
-            setFormData(data);
+            setFormData({
+              total_intake: data.total_intake ?? '',
+              total_admitted: data.total_admitted ?? '',
+              dropout_this_year: data.dropout_this_year ?? '',
+              male_admitted: data.male_admitted ?? '',
+              female_admitted: data.female_admitted ?? '',
+              outside_state_admissions: data.outside_state_admissions ?? '',
+              inside_state_admissions: data.inside_state_admissions ?? '',
+              foreign_students_admitted: data.foreign_students_admitted ?? '',
+              details_link: data.details_link ?? '',
+            });
             if (["submitted", "approved"].includes(data.status)) {
               setReadOnly(true);
             }
@@ -37,7 +47,7 @@ const Form13 = () => {
     }
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     setIsSaved(false);
@@ -46,7 +56,10 @@ const Form13 = () => {
   const handleSave = () => {
     fetch("http://localhost:5000/api/forms/form13", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "user": localStorage.getItem("user") || "{}"
+      },
       body: JSON.stringify(formData),
     })
       .then(() => setIsSaved(true))
@@ -57,7 +70,10 @@ const Form13 = () => {
     const updatedData = { ...formData, status: 'submitted' };
     fetch("http://localhost:5000/api/forms/form13", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "user": localStorage.getItem("user") || "{}"
+      },
       body: JSON.stringify(updatedData),
     })
       .then(() => setIsSaved(true))
@@ -70,39 +86,42 @@ const Form13 = () => {
     <div className="max-w-xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">CRITERIA 13: STUDENT INTAKE</h1>
       <form className="space-y-4" onSubmit={e => e.preventDefault()}>
-        <label>a. Total intake:</label>
-        <input type="number" name="total_intake" value={formData.total_intake} onChange={handleChange} disabled={readOnly} className="w-full border px-3 py-2 rounded mb-3" />
-
-        <label>b. Total number of students admitted:</label>
-        <input type="number" name="total_admitted" value={formData.total_admitted} onChange={handleChange} disabled={readOnly} className="w-full border px-3 py-2 rounded mb-3" />
-
-        <label>c. Total number of students who dropped out this year:</label>
-        <input type="number" name="dropout_this_year" value={formData.dropout_this_year} onChange={handleChange} disabled={readOnly} className="w-full border px-3 py-2 rounded mb-3" />
-
-        <label>d. Total number of male students admitted:</label>
-        <input type="number" name="male_admitted" value={formData.male_admitted} onChange={handleChange} disabled={readOnly} className="w-full border px-3 py-2 rounded mb-3" />
-
-        <label>e. Total number of female students admitted:</label>
-        <input type="number" name="female_admitted" value={formData.female_admitted} onChange={handleChange} disabled={readOnly} className="w-full border px-3 py-2 rounded mb-3" />
-
-        <label>f. Total number of admissions from outside the state:</label>
-        <input type="number" name="outside_state_admissions" value={formData.outside_state_admissions} onChange={handleChange} disabled={readOnly} className="w-full border px-3 py-2 rounded mb-3" />
-
-        <label>g. Total number of admissions from inside the state:</label>
-        <input type="number" name="inside_state_admissions" value={formData.inside_state_admissions} onChange={handleChange} disabled={readOnly} className="w-full border px-3 py-2 rounded mb-3" />
-
-        <label>h. Total number of foreign students admitted:</label>
-        <input type="number" name="foreign_students_admitted" value={formData.foreign_students_admitted} onChange={handleChange} disabled={readOnly} className="w-full border px-3 py-2 rounded mb-3" />
-
-        <label>i. Link of the details:</label>
-        <input type="text" name="details_link" value={formData.details_link} onChange={handleChange} disabled={readOnly} className="w-full border px-3 py-2 rounded mb-3" />
+        {[
+          { label: "a. Total intake:", name: "total_intake" },
+          { label: "b. Total number of students admitted:", name: "total_admitted" },
+          { label: "c. Total number of students who dropped out this year:", name: "dropout_this_year" },
+          { label: "d. Total number of male students admitted:", name: "male_admitted" },
+          { label: "e. Total number of female students admitted:", name: "female_admitted" },
+          { label: "f. Total number of admissions from outside the state:", name: "outside_state_admissions" },
+          { label: "g. Total number of admissions from inside the state:", name: "inside_state_admissions" },
+          { label: "h. Total number of foreign students admitted:", name: "foreign_students_admitted" },
+          { label: "i. Link of the details:", name: "details_link", type: "text" }
+        ].map(({ label, name, type = "number" }) => (
+          <div key={name}>
+            <label>{label}</label>
+            <input
+              type={type}
+              name={name}
+              value={formData[name as keyof typeof formData]}
+              onChange={handleChange}
+              disabled={readOnly}
+              className="w-full border px-3 py-2 rounded mb-3"
+            />
+          </div>
+        ))}
 
         <div className="flex gap-4 mt-6 items-center">
           <Link href="/stu_achieve">
             <Button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Previous</Button>
           </Link>
           <div className="flex-1 flex justify-center gap-4">
-            <button type="button" onClick={handleSave} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Save</button>
+            <button
+              type="button"
+              onClick={handleSave}
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            >
+              Save
+            </button>
             <button
               type="submit"
               onClick={handleSubmit}

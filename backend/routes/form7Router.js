@@ -1,48 +1,31 @@
-//backend/routes/form7Router.js
+// backend/routes/form7Router.js
 const express = require('express');
 const router = express.Router();
-const pool = require('../db');
+const db = require('../db');
 
-// GET existing form data for a school
-router.get('/:sid', async (req, res) => {
-  const { sid } = req.params;
+// Save or Update Form7
+router.post('/save', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM consultancy WHERE sid = ?', [sid]);
-    if (rows.length > 0) {
-      res.json(rows[0]);
-    } else {
-      res.status(404).json({ message: 'No data found' });
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
+    const {
+      sid,
+      total_faculty,
+      total_consultancies,
+      total_beneficiaries,
+      total_revenue,
+      current_year
+    } = req.body;
 
-// POST to save or submit form data
-router.post('/', async (req, res) => {
-  const {
-    sid,
-    total_faculty,
-    total_consultancies,
-    total_beneficiaries,
-    total_revenue,
-    current_year,
-    status
-  } = req.body;
-
-  try {
-    const [existing] = await pool.query('SELECT * FROM consultancy WHERE sid = ?', [sid]);
+    const [existing] = await db.query('SELECT * FROM consultancy WHERE sid = ?', [sid]);
 
     if (existing.length > 0) {
-      await pool.query(
+      await db.query(
         `UPDATE consultancy SET 
           faculties_involved = ?, 
           total_no_of_consultancies = ?, 
           total_no_of_beneficiaries = ?, 
           revenue_generated = ?, 
-          current_year = ?, 
-          status = ? 
+          current_year = ?,
+          status = 'draft' 
         WHERE sid = ?`,
         [
           total_faculty,
@@ -50,12 +33,11 @@ router.post('/', async (req, res) => {
           total_beneficiaries,
           total_revenue,
           current_year,
-          status,
           sid
         ]
       );
     } else {
-      await pool.query(
+      await db.query(
         `INSERT INTO consultancy (
           sid,
           faculties_involved,
@@ -64,23 +46,58 @@ router.post('/', async (req, res) => {
           revenue_generated,
           current_year,
           status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, 'draft')`,
         [
           sid,
           total_faculty,
           total_consultancies,
           total_beneficiaries,
           total_revenue,
-          current_year,
-          status
+          current_year
         ]
       );
     }
 
-    res.status(200).json({ message: 'Form saved successfully' });
+    await db.query(
+      `INSERT INTO form_status (sid, form_number, status) VALUES (?, 7, 'draft') 
+       ON DUPLICATE KEY UPDATE status = 'draft'`,
+      [sid]
+    );
+
+    res.status(200).json({ message: 'Form 7 data saved successfully' });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    console.error('Error saving Form 7 data:', err);
+    res.status(500).json({ message: 'Error saving Form 7 data' });
+  }
+});
+
+// Submit Form7
+router.post('/submit', async (req, res) => {
+  try {
+    const { sid } = req.body;
+    await db.query('UPDATE consultancy SET status = ? WHERE sid = ?', ['submitted', sid]);
+    await db.query(`INSERT INTO form_status (sid, form_number, status) VALUES (?, 7, 'submitted') 
+      ON DUPLICATE KEY UPDATE status = 'submitted'`, [sid]);
+    res.status(200).json({ message: 'Form 7 submitted successfully' });
+  } catch (err) {
+    console.error('Error submitting Form 7:', err);
+    res.status(500).json({ message: 'Error submitting Form 7' });
+  }
+});
+
+// Approve Form7
+
+
+// Get Form7 data
+router.get('/:sid', async (req, res) => {
+  try {
+    const { sid } = req.params;
+    const [result] = await db.query('SELECT * FROM consultancy WHERE sid = ?', [sid]);
+    if (result.length === 0) return res.status(404).json({ message: 'Form 7 data not found' });
+    res.status(200).json(result[0]);
+  } catch (err) {
+    console.error('Error fetching Form 7:', err);
+    res.status(500).json({ message: 'Error fetching Form 7' });
   }
 });
 

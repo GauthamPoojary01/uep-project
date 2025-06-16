@@ -2,14 +2,14 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 
 const Form11 = () => {
   const [formData, setFormData] = useState({
     total_certificate_courses: '',
     total_students_enrolled: '',
     total_faculties_offering: '',
-    total_faculty: ''
+    total_faculty: '',
   });
 
   const [isSaved, setIsSaved] = useState(false);
@@ -19,16 +19,27 @@ const Form11 = () => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     if (user.sid) {
       fetch(`http://localhost:5000/api/forms/form11/${user.sid}`)
-        .then((res) => res.json())
+        .then(async (res) => {
+          const contentType = res.headers.get("content-type");
+          if (!res.ok || !contentType?.includes("application/json")) {
+            throw new Error("Invalid JSON response");
+          }
+          return res.json();
+        })
         .then((data) => {
           if (data) {
-            setFormData(data);
+            setFormData({
+              total_certificate_courses: data.total_certificate_courses ?? '',
+              total_students_enrolled: data.total_students_enrolled ?? '',
+              total_faculties_offering: data.total_faculties_offering ?? '',
+              total_faculty: data.total_faculty ?? '',
+            });
             if (["submitted", "approved"].includes(data.status)) {
               setReadOnly(true);
             }
           }
         })
-        .catch((err) => console.error(err));
+        .catch((err) => console.error("Fetch error:", err));
     }
   }, []);
 
@@ -39,23 +50,37 @@ const Form11 = () => {
   };
 
   const handleSave = () => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
     fetch("http://localhost:5000/api/forms/form11", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "user": JSON.stringify(user),
+      },
       body: JSON.stringify(formData),
     })
-      .then(() => setIsSaved(true))
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to save data");
+        setIsSaved(true);
+      })
       .catch((err) => console.error(err));
   };
 
   const handleSubmit = () => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
     const updatedData = { ...formData, status: 'submitted' };
     fetch("http://localhost:5000/api/forms/form11", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "user": JSON.stringify(user),
+      },
       body: JSON.stringify(updatedData),
     })
-      .then(() => setIsSaved(true))
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to submit data");
+        setIsSaved(true);
+      })
       .catch((err) => console.error(err));
   };
 

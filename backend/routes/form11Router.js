@@ -1,72 +1,95 @@
 // backend/routes/form11Router.js
+
 const express = require("express");
 const router = express.Router();
-const db = require("../db");
+const pool = require("../db");
 
-// Save or submit form11
-router.post("/form11", async (req, res) => {
-  const {
-    total_certificate_courses,
-    total_students_enrolled,
-    total_faculties_offering,
-    total_faculty,
-    status
-  } = req.body;
-
-  const user = JSON.parse(req.headers.user || '{}');
-  const sid = user.sid;
-
-  if (!sid) return res.status(400).json({ error: "Missing SID" });
-
-  const query = `INSERT INTO certificate_courses (
-    sid,
-    total_no_of_certificate_courses,
-    student_enrolled,
-    faculties_offering,
-    total_faculty,
-    status
-  ) VALUES (?, ?, ?, ?, ?, ?)
-  ON DUPLICATE KEY UPDATE
-    total_no_of_certificate_courses = VALUES(total_no_of_certificate_courses),
-    student_enrolled = VALUES(student_enrolled),
-    faculties_offering = VALUES(faculties_offering),
-    total_faculty = VALUES(total_faculty),
-    status = VALUES(status);`;
-
-  try {
-    await db.execute(query, [
-      sid,
-      total_certificate_courses,
-      total_students_enrolled,
-      total_faculties_offering,
-      total_faculty,
-      status || "draft"
-    ]);
-    res.status(200).json({ message: "Form11 data saved successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Database error" });
-  }
-});
-
-// Get form11 data
-router.get("/form11/:sid", async (req, res) => {
+// Fetch existing data for a given sid
+router.get("/:sid", async (req, res) => {
   const { sid } = req.params;
-
   try {
-    const [rows] = await db.execute(
-      "SELECT sid, total_no_of_certificate_courses AS total_certificate_courses, student_enrolled AS total_students_enrolled, faculties_offering AS total_faculties_offering, total_faculty, status FROM certificate_courses WHERE sid = ?",
+    const [rows] = await pool.query(
+      `SELECT 
+        sid, 
+        total_no_of_certificate_courses AS total_certificate_courses, 
+        student_enrolled AS total_students_enrolled, 
+        faculties_offering AS total_faculties_offering, 
+        total_faculty, 
+        status 
+      FROM certificate_courses WHERE sid = ?`,
       [sid]
     );
 
     if (rows.length > 0) {
-      res.status(200).json(rows[0]);
-    } else {
-      res.status(404).json({ message: "No data found for this SID" });
+      return res.json(rows[0]);
     }
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Database error" });
+    return res.json(null);
+  } catch (error) {
+    console.error("Error fetching form11:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Save or update form11 data
+router.post("/", async (req, res) => {
+  const {
+    sid,
+    total_certificate_courses,
+    total_students_enrolled,
+    total_faculties_offering,
+    total_faculty,
+    status = "draft"
+  } = req.body;
+
+  try {
+    const [existing] = await pool.query("SELECT * FROM certificate_courses WHERE sid = ?", [sid]);
+
+    if (existing.length > 0) {
+      await pool.query(
+        `UPDATE certificate_courses SET 
+          total_no_of_certificate_courses = ?, 
+          student_enrolled = ?, 
+          faculties_offering = ?, 
+          total_faculty = ?, 
+          status = ?,
+          rejection_reason = NULL,
+          current_year = YEAR(CURDATE())
+        WHERE sid = ?`,
+        [
+          total_certificate_courses,
+          total_students_enrolled,
+          total_faculties_offering,
+          total_faculty,
+          status,
+          sid
+        ]
+      );
+    } else {
+      await pool.query(
+        `INSERT INTO certificate_courses (
+          sid,
+          total_no_of_certificate_courses,
+          student_enrolled,
+          faculties_offering,
+          total_faculty,
+          status,
+          current_year
+        ) VALUES (?, ?, ?, ?, ?, ?, YEAR(CURDATE()))`,
+        [
+          sid,
+          total_certificate_courses,
+          total_students_enrolled,
+          total_faculties_offering,
+          total_faculty,
+          status
+        ]
+      );
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error saving form11:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
