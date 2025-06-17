@@ -35,8 +35,8 @@ const Form9 = () => {
         .then((res) => res.json())
         .then((data) => {
           if (data) {
-            const safeData = { ...defaultFormData };
-            Object.keys(defaultFormData).forEach((key) => {
+            const safeData: typeof defaultFormData = { ...defaultFormData };
+            (Object.keys(defaultFormData) as (keyof typeof defaultFormData)[]).forEach((key) => {
               safeData[key] = data[key] ?? '';
             });
             setFormData(safeData);

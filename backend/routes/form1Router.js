@@ -30,8 +30,7 @@ router.post('/save', async (req, res) => {
             no_of_phd = ?,
             no_of_net_kset = ?,
             no_of_without_phd_kset_net = ?,
-            no_of_pursuing_phd = ?,
-            status = 'draft'
+            no_of_pursuing_phd = ?
         WHERE sid = ?
       `, [
         year,
@@ -52,8 +51,7 @@ router.post('/save', async (req, res) => {
           no_of_net_kset,
           no_of_without_phd_kset_net,
           no_of_pursuing_phd,
-          status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, 'draft')
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
       `, [
         sid,
         year,

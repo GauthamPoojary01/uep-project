@@ -15,7 +15,6 @@ router.post('/', async (req, res) => {
       total_international,
       total_mou_activities,
       current_year,
-      status
     } = req.body;
 
     const total_mous =
@@ -36,7 +35,6 @@ router.post('/', async (req, res) => {
           total_no_of_international = ?,
           no_of_activities_in_associated_with_mous = ?,
           current_year = ?,
-          status = ?,
           mous = ?
         WHERE sid = ?`,
         [
@@ -47,7 +45,6 @@ router.post('/', async (req, res) => {
           total_international,
           total_mou_activities,
           current_year,
-          status,
           total_mous,
           sid
         ]
@@ -63,9 +60,8 @@ router.post('/', async (req, res) => {
           total_no_of_international,
           no_of_activities_in_associated_with_mous,
           current_year,
-          status,
           mous
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?,?, ?)`,
         [
           sid,
           total_institutions,
@@ -75,7 +71,6 @@ router.post('/', async (req, res) => {
           total_international,
           total_mou_activities,
           current_year,
-          status,
           total_mous
         ]
       );

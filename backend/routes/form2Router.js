@@ -20,8 +20,7 @@ router.post('/save', async (req, res) => {
             total_no_of_programs_3years = ?,
             total_no_of_programs_pg = ?,
             total_no_of_certificate_courses = ?,
-            total_no_of_diploma_courses = ?,
-            status = 'draft'
+            total_no_of_diploma_courses = ?
         WHERE sid = ?
       `, [
         programmes_4_year,
@@ -40,8 +39,7 @@ router.post('/save', async (req, res) => {
           total_no_of_programs_pg,
           total_no_of_certificate_courses,
           total_no_of_diploma_courses,
-          status
-        ) VALUES (?, ?, ?, ?, ?, ?, 'draft')
+        ) VALUES (?, ?, ?, ?, ?, ?)
       `, [
         sid,
         programmes_4_year,

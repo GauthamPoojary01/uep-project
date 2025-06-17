@@ -26,9 +26,7 @@ router.post('/save', async (req, res) => {
           total_no_of_books_chapter_published = ?,
           total_no_of_paper_published = ?,
           total_no_of_link_research = ?,
-          currennt_year = ?,
-          status = ?,
-          rejection_reason = ?
+          currennt_year = ?
         WHERE sid = ?`,
         [
           data.scopus,
@@ -41,8 +39,6 @@ router.post('/save', async (req, res) => {
           data.paper_presented,
           data.chapters_published,
           data.currennt_year,
-          data.status || 'draft',
-          data.rejection_reason || null,
           sid
         ]
       );
@@ -59,10 +55,8 @@ router.post('/save', async (req, res) => {
           total_no_of_books_chapter_published,
           total_no_of_paper_published,
           total_no_of_link_research,
-          currennt_year,
-          status,
-          rejection_reason
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          currennt_year
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           sid,
           data.scopus,
@@ -74,9 +68,7 @@ router.post('/save', async (req, res) => {
           data.books,
           data.paper_presented,
           data.chapters_published,
-          data.currennt_year,
-          data.status || 'draft',
-          data.rejection_reason || null
+          data.currennt_year
         ]
       );
     }

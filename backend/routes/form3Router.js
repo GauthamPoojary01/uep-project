@@ -20,17 +20,13 @@ router.post('/save', async (req, res) => {
           total_no_of_associate_professor = ?,
           total_no_of_assistant_professor = ?,
           total_no_of_professor_of_practice = ?,
-          total_no_of_professor = ?,
-          status = ?,
-          rejection_reason = ?
+          total_no_of_professor = ?
         WHERE sid = ?`,
         [
           data.total_no_of_associate_professor,
           data.total_no_of_assistant_professor,
           data.total_no_of_professor_of_practice,
           data.total_no_of_professor,
-          data.status || 'draft',
-          data.rejection_reason || null,
           sid
         ]
       );
@@ -41,18 +37,15 @@ router.post('/save', async (req, res) => {
           total_no_of_associate_professor,
           total_no_of_assistant_professor,
           total_no_of_professor_of_practice,
-          total_no_of_professor,
-          status,
-          rejection_reason
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          total_no_of_professor
+        ) VALUES (?, ?, ?, ?, ?)`,
         [
           sid,
           data.total_no_of_associate_professor,
           data.total_no_of_assistant_professor,
           data.total_no_of_professor_of_practice,
-          data.total_no_of_professor,
-          data.status || 'draft',
-          data.rejection_reason || null
+          data.total_no_of_professor
+          
         ]
       );
     }

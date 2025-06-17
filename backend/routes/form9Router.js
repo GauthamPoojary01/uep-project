@@ -37,7 +37,6 @@ router.post('/', async (req, res) => {
     total_research_methodology_events,
     total_entrepreneurship_events,
     total_skill_development_events,
-    status = 'draft'
   } = req.body;
 
   try {
@@ -60,9 +59,7 @@ router.post('/', async (req, res) => {
           research_methodology = ?,
           entrepreneurship = ?,
           skill_development = ?,
-          current_year = YEAR(CURDATE()),
-          status = ?,
-          rejection_reason = NULL
+          current_year = YEAR(CURDATE())
         WHERE sid = ?`,
         [
           total_guest_talks,
@@ -80,7 +77,6 @@ router.post('/', async (req, res) => {
           total_research_methodology_events,
           total_entrepreneurship_events,
           total_skill_development_events,
-          status,
           sid
         ]
       );
@@ -104,8 +100,7 @@ router.post('/', async (req, res) => {
           entrepreneurship,
           skill_development,
           current_year,
-          status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, YEAR(CURDATE()), ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, YEAR(CURDATE()))`,
         [
           sid,
           total_guest_talks,
@@ -123,7 +118,6 @@ router.post('/', async (req, res) => {
           total_research_methodology_events,
           total_entrepreneurship_events,
           total_skill_development_events,
-          status
         ]
       );
     }

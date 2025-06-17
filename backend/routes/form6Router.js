@@ -25,8 +25,6 @@ router.post('/', async (req, res) => {
     graduating,
     placements,
     higher_studies,
-    details_link,
-    status = 'draft'
   } = req.body;
 
   try {
@@ -37,32 +35,25 @@ router.post('/', async (req, res) => {
           graduating = ?,
           placed = ?,
           higher_education = ?,
-          link_of_the_details = ?,
-          current_year = YEAR(CURDATE()),
-          status = ?,
-          rejection_reason = NULL
+          current_year = YEAR(CURDATE())
         WHERE sid = ?`,
         [
           graduating,
           placements,
           higher_studies,
-          details_link,
-          status,
           sid
         ]
       );
     } else {
       await pool.query(
         `INSERT INTO placement_and_highereducation (
-          sid, graduating, placed, higher_education, link_of_the_details, current_year, status
-        ) VALUES (?, ?, ?, ?, ?, YEAR(CURDATE()), ?)`,
+          sid, graduating, placed, higher_education, , current_year
+        ) VALUES (?, ?, ?, ?, YEAR(CURDATE()))`,
         [
           sid,
           graduating,
           placements,
           higher_studies,
-          details_link,
-          status
         ]
       );
     }

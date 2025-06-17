@@ -24,8 +24,7 @@ router.post('/save', async (req, res) => {
           total_no_of_consultancies = ?, 
           total_no_of_beneficiaries = ?, 
           revenue_generated = ?, 
-          current_year = ?,
-          status = 'draft' 
+          current_year = ?
         WHERE sid = ?`,
         [
           total_faculty,
@@ -44,9 +43,8 @@ router.post('/save', async (req, res) => {
           total_no_of_consultancies,
           total_no_of_beneficiaries,
           revenue_generated,
-          current_year,
-          status
-        ) VALUES (?, ?, ?, ?, ?, ?, 'draft')`,
+          current_year
+        ) VALUES (?, ?, ?, ?, ?, ?)`,
         [
           sid,
           total_faculty,

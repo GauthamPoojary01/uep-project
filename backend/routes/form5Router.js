@@ -41,7 +41,7 @@ router.post("/", async (req, res) => {
       // Update
       await db.query(
         `UPDATE phd SET research_guides = ?, total_no_of_intake = ?, total_no_of_part_time = ?, total_no_of_full_time = ?,
-         currennt_year = ?, total_no_of_completed = ?, total_no_of_admitted = ?, status = ? WHERE sid = ?`,
+         currennt_year = ?, total_no_of_completed = ?, total_no_of_admitted = ? WHERE sid = ?`,
         [
           research_guides,
           intake,
@@ -50,7 +50,6 @@ router.post("/", async (req, res) => {
           currennt_year,
           phd_completed,
           admitted,
-          status,
           sid,
         ]
       );
@@ -58,8 +57,8 @@ router.post("/", async (req, res) => {
       // Insert
       await db.query(
         `INSERT INTO phd (sid, research_guides, total_no_of_intake, total_no_of_part_time, total_no_of_full_time,
-          currennt_year, total_no_of_completed, total_no_of_admitted, status)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          currennt_year, total_no_of_completed, total_no_of_admitted)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           sid,
           research_guides,
@@ -69,7 +68,6 @@ router.post("/", async (req, res) => {
           currennt_year,
           phd_completed,
           admitted,
-          status,
         ]
       );
     }
