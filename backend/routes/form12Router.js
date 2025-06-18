@@ -1,9 +1,9 @@
 // backend/routes/form12Router.js
 const express = require("express");
 const router = express.Router();
-const db = require("../db"); // Adjust based on your DB connection file
+const db = require("../db"); 
 
-// GET existing form data for a specific user
+
 router.get("/:sid", async (req, res) => {
   const sid = req.params.sid;
   try {
@@ -26,7 +26,7 @@ router.get("/:sid", async (req, res) => {
   }
 });
 
-// POST to insert or update form12 data
+
 router.post("/", async (req, res) => {
   const user = JSON.parse(req.headers.user || '{}');
   const sid = user.sid;
@@ -44,7 +44,7 @@ router.post("/", async (req, res) => {
     const [existing] = await db.query("SELECT * FROM student_achievement WHERE sid = ?", [sid]);
 
     if (existing.length > 0) {
-      // Update existing record
+     
       await db.query(
         `UPDATE student_achievement SET 
           cleard_competitive_exam = ?,
@@ -65,7 +65,7 @@ router.post("/", async (req, res) => {
         ]
       );
     } else {
-      // Insert new record
+      
       await db.query(
         `INSERT INTO student_achievement (
           sid, cleard_competitive_exam, paper_presentation, total_no_of_paper_publication, 
@@ -91,3 +91,4 @@ router.post("/", async (req, res) => {
 });
 
 module.exports = router;
+   

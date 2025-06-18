@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-// Get form6 data by sid
+
 router.get('/:sid', async (req, res) => {
   const { sid } = req.params;
   try {

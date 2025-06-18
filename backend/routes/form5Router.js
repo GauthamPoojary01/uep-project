@@ -4,7 +4,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 
-// GET form5 data by sid
+
 router.get("/:sid", async (req, res) => {
   const { sid } = req.params;
   try {
@@ -31,8 +31,18 @@ router.post("/", async (req, res) => {
     currennt_year,
     phd_completed,
     admitted,
-    status,
+    status = "draft",
   } = req.body;
+
+  if (!sid) {
+    return res.status(400).json({ error: "sid is required" });
+  }
+
+  if (parseInt(intake) !== parseInt(phd_part_time) + parseInt(phd_full_time)) {
+    return res.status(400).json({
+      error: "Total intake must equal sum of part-time and full-time PhD students",
+    });
+  }
 
   try {
     const [existing] = await db.query("SELECT * FROM phd WHERE sid = ?", [sid]);
@@ -41,7 +51,7 @@ router.post("/", async (req, res) => {
       // Update
       await db.query(
         `UPDATE phd SET research_guides = ?, total_no_of_intake = ?, total_no_of_part_time = ?, total_no_of_full_time = ?,
-         currennt_year = ?, total_no_of_completed = ?, total_no_of_admitted = ? WHERE sid = ?`,
+         currennt_year = ?, total_no_of_completed = ?, total_no_of_admitted = ?, status = ? WHERE sid = ?`,
         [
           research_guides,
           intake,
@@ -50,6 +60,7 @@ router.post("/", async (req, res) => {
           currennt_year,
           phd_completed,
           admitted,
+          status,
           sid,
         ]
       );
@@ -57,8 +68,8 @@ router.post("/", async (req, res) => {
       // Insert
       await db.query(
         `INSERT INTO phd (sid, research_guides, total_no_of_intake, total_no_of_part_time, total_no_of_full_time,
-          currennt_year, total_no_of_completed, total_no_of_admitted)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          currennt_year, total_no_of_completed, total_no_of_admitted, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           sid,
           research_guides,
@@ -68,6 +79,7 @@ router.post("/", async (req, res) => {
           currennt_year,
           phd_completed,
           admitted,
+          status,
         ]
       );
     }

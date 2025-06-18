@@ -1,4 +1,4 @@
-// backend/routes/form1Router.js
+//backend/routes/form1Router.js
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
@@ -30,7 +30,8 @@ router.post('/save', async (req, res) => {
             no_of_phd = ?,
             no_of_net_kset = ?,
             no_of_without_phd_kset_net = ?,
-            no_of_pursuing_phd = ?
+            no_of_pursuing_phd = ?,
+            status = 'draft'
         WHERE sid = ?
       `, [
         year,
@@ -51,7 +52,8 @@ router.post('/save', async (req, res) => {
           no_of_net_kset,
           no_of_without_phd_kset_net,
           no_of_pursuing_phd,
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+          status
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, 'draft')
       `, [
         sid,
         year,

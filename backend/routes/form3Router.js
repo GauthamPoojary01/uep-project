@@ -20,13 +20,16 @@ router.post('/save', async (req, res) => {
           total_no_of_associate_professor = ?,
           total_no_of_assistant_professor = ?,
           total_no_of_professor_of_practice = ?,
-          total_no_of_professor = ?
+          total_no_of_professor = ?,
+          status = ?,
+          rejection_reason = NULL
         WHERE sid = ?`,
         [
           data.total_no_of_associate_professor,
           data.total_no_of_assistant_professor,
           data.total_no_of_professor_of_practice,
           data.total_no_of_professor,
+          data.status || 'draft',
           sid
         ]
       );
@@ -37,15 +40,17 @@ router.post('/save', async (req, res) => {
           total_no_of_associate_professor,
           total_no_of_assistant_professor,
           total_no_of_professor_of_practice,
-          total_no_of_professor
-        ) VALUES (?, ?, ?, ?, ?)`,
+          total_no_of_professor,
+          status,
+          rejection_reason
+        ) VALUES (?, ?, ?, ?, ?, ?, NULL)`,
         [
           sid,
           data.total_no_of_associate_professor,
           data.total_no_of_assistant_professor,
           data.total_no_of_professor_of_practice,
-          data.total_no_of_professor
-          
+          data.total_no_of_professor,
+          data.status || 'draft'
         ]
       );
     }
@@ -67,7 +72,7 @@ router.post('/submit', async (req, res) => {
 
   try {
     await db.query(
-      `UPDATE school_staff_profile SET status = 'submitted' WHERE sid = ?`,
+      `UPDATE school_staff_profile SET status = 'submitted', rejection_reason = NULL WHERE sid = ?`,
       [sid]
     );
     res.json({ message: 'Form submitted successfully' });

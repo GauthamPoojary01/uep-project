@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// Save or update form2 data
+
 router.post('/save', async (req, res) => {
   const { sid, programmes_4_year, programmes_3_year, pg_programmes, certificate_courses, diploma_courses } = req.body;
   if (!sid) {
@@ -57,7 +57,7 @@ router.post('/save', async (req, res) => {
   }
 });
 
-// Submit form2
+
 router.post('/submit', async (req, res) => {
   const { sid } = req.body;
   if (!sid) return res.status(400).json({ message: 'sid is required' });
@@ -71,7 +71,7 @@ router.post('/submit', async (req, res) => {
   }
 });
 
-// Get form2 data
+
 router.get('/', async (req, res) => {
   const sid = req.query.sid;
   if (!sid) return res.status(400).json({ message: 'sid is required' });

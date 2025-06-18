@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 
-// Save or Update Form7
+
 router.post('/save', async (req, res) => {
   try {
     const {
@@ -69,7 +69,7 @@ router.post('/save', async (req, res) => {
   }
 });
 
-// Submit Form7
+
 router.post('/submit', async (req, res) => {
   try {
     const { sid } = req.body;
@@ -83,10 +83,7 @@ router.post('/submit', async (req, res) => {
   }
 });
 
-// Approve Form7
 
-
-// Get Form7 data
 router.get('/:sid', async (req, res) => {
   try {
     const { sid } = req.params;

@@ -4,7 +4,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 
-// Fetch existing data for a given sid
+
 router.get("/:sid", async (req, res) => {
   const { sid } = req.params;
   try {
@@ -30,7 +30,7 @@ router.get("/:sid", async (req, res) => {
   }
 });
 
-// Save or update form11 data
+
 router.post("/", async (req, res) => {
   const {
     sid,

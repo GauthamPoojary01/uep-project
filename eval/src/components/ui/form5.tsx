@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
 
 const Form5 = () => {
   const [formData, setFormData] = useState({
@@ -61,25 +62,48 @@ const Form5 = () => {
   };
 
   const handleSave = () => {
-    fetch('http://localhost:5000/api/forms/form5', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
+  fetch('http://localhost:5000/api/forms/form5', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData)
+  })
+    .then(async res => {
+      const result = await res.json();
+      if (!res.ok) {
+        toast.error(result.error || "Failed to save Form 5");
+        return;
+      }
+      setIsSaved(true);
+      toast.success("Form 5 saved successfully");
     })
-      .then(() => setIsSaved(true))
-      .catch(err => console.error(err));
-  };
+    .catch(err => {
+      console.error(err);
+      toast.error("An error occurred while saving.");
+    });
+};
 
-  const handleSubmit = () => {
-    const updatedData = { ...formData, status: 'submitted' };
-    fetch('http://localhost:5000/api/forms/form5', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedData)
+const handleSubmit = () => {
+  const updatedData = { ...formData, status: 'submitted' };
+  fetch('http://localhost:5000/api/forms/form5', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updatedData)
+  })
+    .then(async res => {
+      const result = await res.json();
+      if (!res.ok) {
+        toast.success(result.error || "Failed to submit Form 5");
+        return;
+      }
+      toast.success("Form 5 submitted successfully");
+      setIsSaved(true);
     })
-      .then(() => setIsSaved(true))
-      .catch(err => console.error(err));
-  };
+    .catch(err => {
+      console.error(err);
+      toast.error("An error occurred while submitting.");
+    });
+};
+
 
   const allFilled = Object.values(formData).every(val => val !== '');
 

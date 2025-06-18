@@ -3,10 +3,10 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 
-// Helper function to get current year
+
 const getCurrentYear = () => new Date().getFullYear();
 
-// GET form13 data by sid
+
 router.get("/:sid", async (req, res) => {
   const { sid } = req.params;
   try {
@@ -22,7 +22,7 @@ router.get("/:sid", async (req, res) => {
   }
 });
 
-// POST form13 data (insert or update)
+
 router.post("/", async (req, res) => {
   const {
     total_intake,
