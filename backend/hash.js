@@ -1,4 +1,4 @@
-// hash.js
+// backend/hash.js
 const bcrypt = require('bcrypt');
 
 const plainPassword = 'admin123';

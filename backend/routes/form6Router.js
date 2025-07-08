@@ -4,10 +4,10 @@ const router = express.Router();
 const pool = require('../db');
 
 
-router.get('/:sid', async (req, res) => {
-  const { sid } = req.params;
+router.get('/:school_id', async (req, res) => {
+  const { school_id } = req.params;
   try {
-    const [rows] = await pool.query('SELECT * FROM placement_and_highereducation WHERE sid = ?', [sid]);
+    const [rows] = await pool.query('SELECT * FROM placement_and_highereducation WHERE school_id = ?', [school_id]);
     if (rows.length > 0) {
       return res.json(rows[0]);
     }
@@ -21,14 +21,14 @@ router.get('/:sid', async (req, res) => {
 // Save or update form6 data
 router.post('/', async (req, res) => {
   const {
-    sid,
+    school_id,
     graduating,
     placements,
     higher_studies,
   } = req.body;
 
   try {
-    const [existing] = await pool.query('SELECT * FROM placement_and_highereducation WHERE sid = ?', [sid]);
+    const [existing] = await pool.query('SELECT * FROM placement_and_highereducation WHERE school_id = ?', [school_id]);
     if (existing.length > 0) {
       await pool.query(
         `UPDATE placement_and_highereducation SET 
@@ -36,21 +36,21 @@ router.post('/', async (req, res) => {
           placed = ?,
           higher_education = ?,
           current_year = YEAR(CURDATE())
-        WHERE sid = ?`,
+        WHERE school_id = ?`,
         [
           graduating,
           placements,
           higher_studies,
-          sid
+          school_id
         ]
       );
     } else {
       await pool.query(
         `INSERT INTO placement_and_highereducation (
-          sid, graduating, placed, higher_education, , current_year
+          school_id, graduating, placed, higher_education, , current_year
         ) VALUES (?, ?, ?, ?, YEAR(CURDATE()))`,
         [
-          sid,
+          school_id,
           graduating,
           placements,
           higher_studies,

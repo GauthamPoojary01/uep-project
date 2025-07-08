@@ -1,4 +1,4 @@
-//backend/controllers/userController.js
+//UEPFINAL/backend/controllers/userController.js
 const db = require('../db');
 const bcrypt = require('bcrypt');
 

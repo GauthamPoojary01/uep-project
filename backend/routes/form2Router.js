@@ -5,13 +5,13 @@ const db = require('../db');
 
 
 router.post('/save', async (req, res) => {
-  const { sid, programmes_4_year, programmes_3_year, pg_programmes, certificate_courses, diploma_courses } = req.body;
-  if (!sid) {
-    return res.status(400).json({ message: 'sid is required' });
+  const { school_id, programmes_4_year, programmes_3_year, pg_programmes, certificate_courses, diploma_courses } = req.body;
+  if (!school_id) {
+    return res.status(400).json({ message: 'school_id is required' });
   }
 
   try {
-    const [existing] = await db.query('SELECT * FROM school_programmes_and_courses WHERE sid = ?', [sid]);
+    const [existing] = await db.query('SELECT * FROM school_programmes_and_courses WHERE school_id = ?', [school_id]);
 
     if (existing.length > 0) {
       await db.query(`
@@ -21,19 +21,19 @@ router.post('/save', async (req, res) => {
             total_no_of_programs_pg = ?,
             total_no_of_certificate_courses = ?,
             total_no_of_diploma_courses = ?
-        WHERE sid = ?
+        WHERE school_id = ?
       `, [
         programmes_4_year,
         programmes_3_year,
         pg_programmes,
         certificate_courses,
         diploma_courses,
-        sid
+        school_id
       ]);
     } else {
       await db.query(`
         INSERT INTO school_programmes_and_courses (
-          sid,
+          school_id,
           total_no_of_programs_4years,
           total_no_of_programs_3years,
           total_no_of_programs_pg,
@@ -41,7 +41,7 @@ router.post('/save', async (req, res) => {
           total_no_of_diploma_courses,
         ) VALUES (?, ?, ?, ?, ?, ?)
       `, [
-        sid,
+        school_id,
         programmes_4_year,
         programmes_3_year,
         pg_programmes,
@@ -59,11 +59,11 @@ router.post('/save', async (req, res) => {
 
 
 router.post('/submit', async (req, res) => {
-  const { sid } = req.body;
-  if (!sid) return res.status(400).json({ message: 'sid is required' });
+  const { school_id } = req.body;
+  if (!school_id) return res.status(400).json({ message: 'school_id is required' });
 
   try {
-    await db.query('UPDATE school_programmes_and_courses SET status = ? WHERE sid = ?', ['submitted', sid]);
+    await db.query('UPDATE school_programmes_and_courses SET status = ? WHERE school_id = ?', ['submitted', school_id]);
     res.status(200).json({ message: 'Form 2 submitted successfully' });
   } catch (err) {
     console.error('Error submitting form 2:', err);
@@ -73,11 +73,11 @@ router.post('/submit', async (req, res) => {
 
 
 router.get('/', async (req, res) => {
-  const sid = req.query.sid;
-  if (!sid) return res.status(400).json({ message: 'sid is required' });
+  const school_id = req.query.school_id;
+  if (!school_id) return res.status(400).json({ message: 'school_id is required' });
 
   try {
-    const [rows] = await db.query('SELECT * FROM school_programmes_and_courses WHERE sid = ?', [sid]);
+    const [rows] = await db.query('SELECT * FROM school_programmes_and_courses WHERE school_id = ?', [school_id]);
     if (rows.length === 0) return res.status(404).json({ message: 'No data found' });
     res.json(rows[0]);
   } catch (err) {

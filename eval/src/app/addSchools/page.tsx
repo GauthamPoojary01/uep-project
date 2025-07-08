@@ -1,10 +1,11 @@
+//UEPFINAL/eval/src/app/addSchools/page.tsx
 'use client';
 import { useState, useEffect } from "react";
 
 const SchoolsPage = () => {
   const [schoolName, setSchoolName] = useState('');
   const [message, setMessage] = useState('');
-  const [schools, setSchools] = useState<{ sid: number; school_name: string }[]>([]);
+  const [schools, setSchools] = useState<{ school_id: number; school_name: string }[]>([]);
 
   const addSchool = async () => {
     if (!schoolName.trim()) return;
@@ -30,18 +31,18 @@ const SchoolsPage = () => {
     }
   };
 
-  const deleteSchool = async (sid: number) => {
+  const deleteSchool = async (school_id: number) => {
     if (!confirm('Are you sure you want to delete this school?')) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/schools/delete/${sid}`, {
+      const res = await fetch(`http://localhost:5000/api/schools/delete/${school_id}`, {
         method: 'DELETE'
       });
 
       const data = await res.json();
       if (res.ok) {
         setMessage('✅ School deleted successfully');
-        setSchools(prev => prev.filter(school => school.sid !== sid));
+        setSchools(prev => prev.filter(school => school.school_id !== school_id));
       } else {
         setMessage(`❌ ${data.error}`);
       }
@@ -94,10 +95,10 @@ const SchoolsPage = () => {
       <h2 className="mt-6 text-lg font-semibold">All Existing Schools</h2>
       <ul className="text-sm text-gray-700 mt-2 space-y-2">
         {schools.map((school) => (
-          <li key={school.sid} className="flex justify-between items-center">
+          <li key={school.school_id} className="flex justify-between items-center">
             <span>{school.school_name}</span>
             <button
-              onClick={() => deleteSchool(school.sid)}
+              onClick={() => deleteSchool(school.school_id)}
               className="text-red-600 text-xs hover:underline"
             >
               Remove

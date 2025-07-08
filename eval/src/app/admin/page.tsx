@@ -1,4 +1,4 @@
-// Updated: eval/src/app/admin/page.tsx
+// UEPFINAL/eval/src/app/admin/page.tsx
 'use client';
 
 import Head from 'next/head';

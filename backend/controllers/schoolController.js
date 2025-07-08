@@ -1,4 +1,4 @@
-///backend/controllers/schoolController.js
+// UEPFINAL/backend/controllers/schoolController.js
 const db = require('../db');
 
 exports.addSchool = async (req, res) => {
@@ -8,21 +8,18 @@ exports.addSchool = async (req, res) => {
   }
 
   try {
-    const [rows] = await db.query('SELECT MAX(sid) as maxSid FROM school_metadata');
-    const nextSid = (rows[0].maxSid || 0) + 1;
-    const school_id = `ALOY_${String(nextSid).padStart(2, '0')}_`;
+    const [rows] = await db.query('SELECT MAX(CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(school_id, "_", -2), "_", 1) AS UNSIGNED)) AS maxschool_id FROM school_metadata');
+    const nextschool_number = (rows[0].maxschool_id || 0) + 1;
+    const school_id = `ALOY_${String(nextschool_number).padStart(2, '0')}_`;
 
     await db.query(
-      'INSERT INTO school_metadata (sid, school_id, school_name) VALUES (?, ?, ?)',
-      [nextSid, school_id, school_name]
+      'INSERT INTO school_metadata (school_id, school_name) VALUES (?, ?)',
+      [school_id, school_name]
     );
 
-    res.status(201).json({ message: 'School added', sid: nextSid });
+    res.status(201).json({ message: 'School added', school_id });
   } catch (err) {
     console.error('Error adding school:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
-
-
-

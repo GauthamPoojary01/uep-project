@@ -1,4 +1,5 @@
-//backend/routes/form1Router.js
+// PATCHED form1Router.js backend logic
+
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
@@ -6,60 +7,54 @@ const db = require('../db');
 // Save or update form1 data
 router.post('/save', async (req, res) => {
   const {
-    sid,
+    school_id,
     year,
     total_faculty,
     phd_holders,
-    net_kset,
     without_phd_kset,
     pursuing_phd
   } = req.body;
 
-  if (!sid) {
-    return res.status(400).json({ message: 'sid is required' });
+  if (!school_id) {
+    return res.status(400).json({ message: 'school_id is required' });
   }
 
   try {
-    const [existing] = await db.query('SELECT * FROM school_profile WHERE sid = ?', [sid]);
+    const [existing] = await db.query('SELECT * FROM school_profile WHERE school_id = ?', [school_id]);
 
     if (existing.length > 0) {
       await db.query(`
         UPDATE school_profile
-        SET current_year = ?,
-            no_of_faculties = ?,
+        SET year_of_establishment = ?,
+            total_no_of_faculties = ?,
             no_of_phd = ?,
-            no_of_net_kset = ?,
             no_of_without_phd_kset_net = ?,
-            no_of_pursuing_phd = ?,
-            status = 'draft'
-        WHERE sid = ?
+            no_of_pursuing_phd = ?
+        WHERE school_id = ?
       `, [
         year,
         total_faculty,
         phd_holders,
-        net_kset,
         without_phd_kset,
         pursuing_phd,
-        sid
+        school_id
       ]);
     } else {
       await db.query(`
         INSERT INTO school_profile (
-          sid,
-          current_year,
-          no_of_faculties,
+          school_id,
+          year_of_establishment,
+          total_no_of_faculties,
           no_of_phd,
-          no_of_net_kset,
           no_of_without_phd_kset_net,
-          no_of_pursuing_phd,
-          status
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, 'draft')
+          no_of_pursuing_phd
+        ) VALUES (?, ?, ?, ?, ?, ?)
       `, [
-        sid,
+        school_id,
         year,
         total_faculty,
         phd_holders,
-        net_kset,
+
         without_phd_kset,
         pursuing_phd
       ]);
@@ -74,11 +69,17 @@ router.post('/save', async (req, res) => {
 
 // Submit form1
 router.post('/submit', async (req, res) => {
-  const { sid } = req.body;
-  if (!sid) return res.status(400).json({ message: 'sid is required' });
+  const { school_id } = req.body;
+  if (!school_id) return res.status(400).json({ message: 'school_id is required' });
 
   try {
-    await db.query('UPDATE school_profile SET status = ? WHERE sid = ?', ['submitted', sid]);
+    const [existing] = await db.query('SELECT * FROM school_profile WHERE school_id = ?', [school_id]);
+
+    if (existing.length === 0) {
+      return res.status(404).json({ message: 'Form data not found. Please save first.' });
+    }
+
+    await db.query('UPDATE form_status1 SET status = ? WHERE school_id = ?', ['submitted', school_id]);
     res.status(200).json({ message: 'Form 1 submitted successfully' });
   } catch (err) {
     console.error('Error submitting form 1:', err);
@@ -88,11 +89,11 @@ router.post('/submit', async (req, res) => {
 
 // Get form1 data
 router.get('/', async (req, res) => {
-  const sid = req.query.sid;
-  if (!sid) return res.status(400).json({ message: 'sid is required' });
+  const school_id = req.query.school_id;
+  if (!school_id) return res.status(400).json({ message: 'school_id is required' });
 
   try {
-    const [rows] = await db.query('SELECT * FROM school_profile WHERE sid = ?', [sid]);
+    const [rows] = await db.query('SELECT * FROM school_profile WHERE school_id = ?', [school_id]);
     if (rows.length === 0) return res.status(404).json({ message: 'No data found' });
     res.json(rows[0]);
   } catch (err) {

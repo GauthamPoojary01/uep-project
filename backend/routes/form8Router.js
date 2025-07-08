@@ -6,7 +6,7 @@ const db = require('../db');
 router.post('/', async (req, res) => {
   try {
     const {
-      sid,
+      school_id,
       total_departments,
       total_institutions,
       total_corporate,
@@ -22,7 +22,7 @@ router.post('/', async (req, res) => {
       parseInt(total_national || 0) +
       parseInt(total_international || 0);
 
-    const [existing] = await db.query('SELECT * FROM mous WHERE sid = ?', [sid]);
+    const [existing] = await db.query('SELECT * FROM mous WHERE school_id = ?', [school_id]);
 
     if (existing.length > 0) {
       await db.query(
@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
           no_of_activities_in_associated_with_mous = ?,
           current_year = ?,
           mous = ?
-        WHERE sid = ?`,
+        WHERE school_id = ?`,
         [
           total_institutions,
           0,
@@ -45,13 +45,13 @@ router.post('/', async (req, res) => {
           total_mou_activities,
           current_year,
           total_mous,
-          sid
+          school_id
         ]
       );
     } else {
       await db.query(
         `INSERT INTO mous (
-          sid,
+          school_id,
           total_no_of_instiution,
           total_no_of_industry,
           total_no_of_corporate_house,
@@ -62,7 +62,7 @@ router.post('/', async (req, res) => {
           mous
         ) VALUES (?, ?, ?, ?, ?, ?, ?,?, ?)`,
         [
-          sid,
+          school_id,
           total_institutions,
           0,
           total_corporate,
@@ -82,11 +82,11 @@ router.post('/', async (req, res) => {
   }
 });
 
-// ✅ GET: Form 8 by sid
-router.get('/:sid', async (req, res) => {
+// ✅ GET: Form 8 by school_id
+router.get('/:school_id', async (req, res) => {
   try {
-    const { sid } = req.params;
-    const [result] = await db.query('SELECT * FROM mous WHERE sid = ?', [sid]);
+    const { school_id } = req.params;
+    const [result] = await db.query('SELECT * FROM mous WHERE school_id = ?', [school_id]);
 
     if (result.length === 0) {
       return res.status(404).json({ message: 'Form 8 data not found' });

@@ -5,14 +5,14 @@ const router = express.Router();
 const db = require("../db");
 
 
-router.get("/:sid", async (req, res) => {
-  const { sid } = req.params;
+router.get("/:school_id", async (req, res) => {
+  const { school_id } = req.params;
   try {
-    const [rows] = await db.query("SELECT * FROM phd WHERE sid = ?", [sid]);
+    const [rows] = await db.query("SELECT * FROM phd WHERE school_id = ?", [school_id]);
     if (rows.length > 0) {
       res.json(rows[0]);
     } else {
-      res.status(404).json({ error: "No data found for this SID" });
+      res.status(404).json({ error: "No data found for this school_id" });
     }
   } catch (error) {
     console.error("Error fetching Form5 data:", error);
@@ -23,7 +23,7 @@ router.get("/:sid", async (req, res) => {
 // POST (insert/update) form5 data
 router.post("/", async (req, res) => {
   const {
-    sid,
+    school_id,
     research_guides,
     intake,
     phd_part_time,
@@ -34,8 +34,8 @@ router.post("/", async (req, res) => {
     status = "draft",
   } = req.body;
 
-  if (!sid) {
-    return res.status(400).json({ error: "sid is required" });
+  if (!school_id) {
+    return res.status(400).json({ error: "school_id is required" });
   }
 
   if (parseInt(intake) !== parseInt(phd_part_time) + parseInt(phd_full_time)) {
@@ -45,13 +45,13 @@ router.post("/", async (req, res) => {
   }
 
   try {
-    const [existing] = await db.query("SELECT * FROM phd WHERE sid = ?", [sid]);
+    const [existing] = await db.query("SELECT * FROM phd WHERE school_id = ?", [school_id]);
 
     if (existing.length > 0) {
       // Update
       await db.query(
         `UPDATE phd SET research_guides = ?, total_no_of_intake = ?, total_no_of_part_time = ?, total_no_of_full_time = ?,
-         currennt_year = ?, total_no_of_completed = ?, total_no_of_admitted = ?, status = ? WHERE sid = ?`,
+         currennt_year = ?, total_no_of_completed = ?, total_no_of_admitted = ?, status = ? WHERE school_id = ?`,
         [
           research_guides,
           intake,
@@ -61,17 +61,17 @@ router.post("/", async (req, res) => {
           phd_completed,
           admitted,
           status,
-          sid,
+          school_id,
         ]
       );
     } else {
       // Insert
       await db.query(
-        `INSERT INTO phd (sid, research_guides, total_no_of_intake, total_no_of_part_time, total_no_of_full_time,
+        `INSERT INTO phd (school_id, research_guides, total_no_of_intake, total_no_of_part_time, total_no_of_full_time,
           currennt_year, total_no_of_completed, total_no_of_admitted, status)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-          sid,
+          school_id,
           research_guides,
           intake,
           phd_part_time,

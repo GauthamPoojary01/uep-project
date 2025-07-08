@@ -1,3 +1,4 @@
+//UEPFINAL/eval/src/app/addUser/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -11,7 +12,7 @@ export default function AddUserPage() {
   });
 
   const [popupMessage, setPopupMessage] = useState<string | null>(null);
-  const [unassignedSchools, setUnassignedSchools] = useState<{ sid: number; school_name: string }[]>([]);
+  const [unassignedSchools, setUnassignedSchools] = useState<{ school_id: number; school_name: string }[]>([]);
 
   useEffect(() => {
     if (formData.role === 'Dean') {
@@ -136,7 +137,7 @@ export default function AddUserPage() {
               >
                 <option value="" disabled>Select school</option>
                 {unassignedSchools.map(school => (
-                  <option key={school.sid} value={school.school_name}>
+                  <option key={school.school_id} value={school.school_name}>
                     {school.school_name}
                   </option>
                 ))}

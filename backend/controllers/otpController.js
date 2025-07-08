@@ -1,4 +1,4 @@
-//  backend/controllers/otpController.js
+//  UEPFINAL/backend/controllers/otpController.js
 const nodemailer = require('nodemailer');
 const db = require('../db');
 const bcrypt = require('bcrypt');

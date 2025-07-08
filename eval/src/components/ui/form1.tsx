@@ -1,4 +1,4 @@
-// eval/src/components/ui/form1.tsx
+// UEPFINAL/eval/src/components/ui/form1.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -19,22 +19,22 @@ const Form1 = () => {
   const [status, setStatus] = useState('');
   const [readOnly, setReadOnly] = useState(false);
 
-  const fetchSavedData = async () => {
-    const user = JSON.parse(localStorage.getItem("user") || '{}');
-    if (!user?.sid) return;
+ const fetchSavedData = async () => {
+  const user = JSON.parse(localStorage.getItem("user") || '{}');
+  if (!user?.school_id) return; // ✅ Changed from sid to school_id
 
-    try {
-      const res = await fetch("http://localhost:5000/api/forms/form1?sid=" + user.sid);
-      if (!res.ok) return;
-      const data = await res.json();
-      setFormData(data);
-      setStatus(data.status);
-      if (data.status === 'submitted' || data.status === 'approved') setReadOnly(true);
-      if (data.status === 'rejected') toast.error("Your previous submission was rejected. Please correct it.");
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  try {
+    const res = await fetch("http://localhost:5000/api/forms/form1?school_id=" + user.school_id);
+    if (!res.ok) return;
+    const data = await res.json();
+    setFormData(data);
+    setStatus(data.status);
+    if (data.status === 'submitted' || data.status === 'approved') setReadOnly(true);
+    if (data.status === 'rejected') toast.error("Your previous submission was rejected. Please correct it.");
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   useEffect(() => {
     fetchSavedData();
@@ -46,45 +46,50 @@ const Form1 = () => {
   };
 
   const handleSave = async () => {
-    const user = JSON.parse(localStorage.getItem("user") || '{}');
-    try {
-      const res = await fetch("http://localhost:5000/api/forms/form1/save", {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, sid: user.sid })
-      });
-      if (res.ok) {
-        toast.success("Saved successfully");
-        setIsSaved(true);
-        setStatus('draft');
-      } else {
-        toast.error("Failed to save");
-      }
-    } catch (err) {
-      toast.error("Server error");
+  const user = JSON.parse(localStorage.getItem("user") || '{}');
+  try {
+    const res = await fetch("http://localhost:5000/api/forms/form1/save", {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...formData,
+        school_id: user.school_id // ✅ FIXED: changed from sid to school_id
+      })
+    });
+    if (res.ok) {
+      toast.success("Saved successfully");
+      setIsSaved(true);
+      setStatus('draft');
+    } else {
+      toast.error("Failed to save");
     }
-  };
+  } catch (err) {
+    toast.error("Server error");
+  }
+};
 
   const handleSubmit = async () => {
-    if (!isSaved) return toast("Save before submitting");
-    const user = JSON.parse(localStorage.getItem("user") || '{}');
-    try {
-      const res = await fetch("http://localhost:5000/api/forms/form1/submit", {
-        method: "POST",
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sid: user.sid })
-      });
-      if (res.ok) {
-        toast.success("Submitted successfully");
-        setStatus("submitted");
-        setReadOnly(true);
-      } else {
-        toast.error("Submission failed");
-      }
-    } catch (err) {
-      toast.error("Server error");
+  if (!isSaved) return toast("Save before submitting");
+  const user = JSON.parse(localStorage.getItem("user") || '{}');
+  try {
+    const res = await fetch("http://localhost:5000/api/forms/form1/submit", {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        school_id: user.school_id // ✅ FIXED: changed from sid to school_id
+      })
+    });
+    if (res.ok) {
+      toast.success("Submitted successfully");
+      setStatus("submitted");
+      setReadOnly(true);
+    } else {
+      toast.error("Submission failed");
     }
-  };
+  } catch (err) {
+    toast.error("Server error");
+  }
+};
 
   return (
     <div className="max-w-xl mx-auto p-4">

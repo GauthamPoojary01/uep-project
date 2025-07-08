@@ -5,10 +5,10 @@ const router = express.Router();
 const pool = require('../db');
 
 
-router.get('/:sid', async (req, res) => {
-  const { sid } = req.params;
+router.get('/:school_id', async (req, res) => {
+  const { school_id } = req.params;
   try {
-    const [rows] = await pool.query('SELECT * FROM staff_achievements WHERE sid = ?', [sid]);
+    const [rows] = await pool.query('SELECT * FROM staff_achievements WHERE school_id = ?', [school_id]);
     if (rows.length > 0) {
       return res.json(rows[0]);
     }
@@ -22,7 +22,7 @@ router.get('/:sid', async (req, res) => {
 
 router.post('/', async (req, res) => {
   const {
-    sid,
+    school_id,
     resource_person,
     total_faculty_attended_seminar,
     total_faculty,
@@ -39,7 +39,7 @@ router.post('/', async (req, res) => {
   } = req.body;
 
   try {
-    const [existing] = await pool.query('SELECT * FROM staff_achievements WHERE sid = ?', [sid]);
+    const [existing] = await pool.query('SELECT * FROM staff_achievements WHERE school_id = ?', [school_id]);
     if (existing.length > 0) {
       await pool.query(
         `UPDATE staff_achievements SET 
@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
           current_year = YEAR(CURDATE()),
           status = ?,
           rejection_reason = NULL
-        WHERE sid = ?`,
+        WHERE school_id = ?`,
         [
           resource_person,
           total_faculty_attended_seminar,
@@ -65,17 +65,17 @@ router.post('/', async (req, res) => {
           faculty_mooc,
           document_link,
           status,
-          sid
+          school_id
         ]
       );
     } else {
       await pool.query(
         `INSERT INTO staff_achievements (
-          sid, total_no_resource_person, attended_seminars, total_no_of_faculties_workshop, 
+          school_id, total_no_resource_person, attended_seminars, total_no_of_faculties_workshop, 
           kset_net, mmmtp, staff_induction, mooc, link_of_the_document, current_year, status
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, YEAR(CURDATE()), ?)`,
         [
-          sid,
+          school_id,
           resource_person,
           total_faculty_attended_seminar,
           total_faculty_attended_workshop,

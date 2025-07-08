@@ -1,4 +1,4 @@
-
+//backend/routes/form14router.js
 const express = require("express");
 const router = express.Router();
 const db = require("../db");
@@ -15,16 +15,16 @@ router.post("/", (req, res) => {
   } = req.body;
 
   const user = JSON.parse(req.headers["user"] || "{}");
-  const sid = user.sid;
+  const school_id = user.school_id;
   const current_year = new Date().getFullYear();
 
-  if (!sid) {
-    return res.status(400).json({ error: "SID missing in user header" });
+  if (!school_id) {
+    return res.status(400).json({ error: "school_id missing in user header" });
   }
 
   const query = `
     INSERT INTO placement_and_highereducation
-      (sid, graduating, placed, higher_education, link_of_the_details, current_year)
+      (school_id, graduating, placed, higher_education, link_of_the_details, current_year)
     VALUES (?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE
       graduating = VALUES(graduating),
@@ -37,7 +37,7 @@ router.post("/", (req, res) => {
   db.query(
     query,
     [
-      sid,
+      school_id,
       graduating,
       placements,
       higher_studies,
@@ -54,11 +54,11 @@ router.post("/", (req, res) => {
   );
 });
 
-router.get("/:sid", (req, res) => {
-  const { sid } = req.params;
-  const query = `SELECT graduating, placed, higher_education, link_of_the_details FROM placement_and_highereducation WHERE sid = ?`;
+router.get("/:school_id", (req, res) => {
+  const { school_id } = req.params;
+  const query = `SELECT graduating, placed, higher_education, link_of_the_details FROM placement_and_highereducation WHERE school_id = ?`;
 
-  db.query(query, [sid], (err, results) => {
+  db.query(query, [school_id], (err, results) => {
     if (err) {
       console.error("DB error:", err);
       return res.status(500).json({ error: "Database error" });

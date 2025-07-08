@@ -1,4 +1,4 @@
-//backend/routes/userRoutes.js
+//UEPFINAL/backend/routes/userRoutes.js
 const express = require('express');
 const router = express.Router();
 const otpController = require('../controllers/otpController');
@@ -45,10 +45,10 @@ router.post('/add', async (req, res) => {
       return res.status(404).json({ error: 'School not found' });
     }
 
-    const sid = schoolData[0].sid;
+    const school_id = schoolData[0].school_id;
     const [result] = await db.execute(
-      'INSERT INTO users (username, name, password, department, role, sid) VALUES (?, ?, ?, ?, ?, ?)',
-      [email, name, '', school || '', role, sid]
+      'INSERT INTO users (username, name, password, department, role, school_id) VALUES (?, ?, ?, ?, ?, ?)',
+      [email, name, '', school || '', role, school_id]
     );
 
     res.status(201).json({ message: 'User added successfully.' });
@@ -108,7 +108,7 @@ router.post('/update', async (req, res) => {
 
 router.get('/get-all', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT sid, school_name FROM school_metadata');
+    const [rows] = await db.query('SELECT school_id, school_name FROM school_metadata');
     res.json(rows);
   } catch (err) {
     console.error('Error fetching schools:', err);
@@ -119,13 +119,13 @@ router.get('/get-all', async (req, res) => {
 
 router.get('/unassigned-schools', async (req, res) => {
   try {
-    const [assigned] = await db.query('SELECT sid FROM users WHERE role = "Dean"');
-    const assignedSids = assigned.map(row => row.sid).filter(Boolean);
+    const [assigned] = await db.query('SELECT school_id FROM users WHERE role = "Dean"');
+    const assignedschool_ids = assigned.map(row => row.school_id).filter(Boolean);
     const [schools] = await db.query(
-      assignedSids.length
-        ? `SELECT * FROM school_metadata WHERE sid NOT IN (?)`
+      assignedschool_ids.length
+        ? `SELECT * FROM school_metadata WHERE school_id NOT IN (?)`
         : `SELECT * FROM school_metadata`,
-      assignedSids.length ? [assignedSids] : []
+      assignedschool_ids.length ? [assignedschool_ids] : []
     );
     res.json(schools);
   } catch (err) {
@@ -141,7 +141,7 @@ router.get('/schools', async (req, res) => {
     const [rows] = await db.query(`
       SELECT DISTINCT s.school_name
       FROM users u
-      JOIN school_metadata s ON u.sid = s.sid
+      JOIN school_metadata s ON u.school_id = s.school_id
       WHERE u.role = 'Dean'
     `);
     res.json(rows);

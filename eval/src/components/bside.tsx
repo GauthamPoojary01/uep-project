@@ -1,4 +1,4 @@
-// src/components/bside.tsx
+// UEPFINAL/eval/src/components/bside.tsx
 'use client';
 
 import Image from 'next/image';

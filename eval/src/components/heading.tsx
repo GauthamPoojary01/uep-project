@@ -1,5 +1,5 @@
 "use client"
-//src/components/heading.tsx
+//UEPFINAL/eval/src/components/heading.tsx
 import Image from "next/image";
 import logo from "../../public/images/logo1.jpg"; 
 import { Autour_One } from "next/font/google";

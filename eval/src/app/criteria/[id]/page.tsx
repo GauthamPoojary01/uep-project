@@ -1,4 +1,4 @@
-// src/app/criteria/[id]/page.tsx or other pages like schl_prg/page.tsx
+// UEPFINAL/eval/src/app/criteria/[id]/page.tsx 
 "use client";
 
 import { useParams } from "next/navigation";

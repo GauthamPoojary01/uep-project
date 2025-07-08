@@ -4,10 +4,10 @@ const router = express.Router();
 const pool = require('../db');
 
 
-router.get('/:sid', async (req, res) => {
-  const { sid } = req.params;
+router.get('/:school_id', async (req, res) => {
+  const { school_id } = req.params;
   try {
-    const [rows] = await pool.query('SELECT * FROM school_activites WHERE sid = ?', [sid]);
+    const [rows] = await pool.query('SELECT * FROM school_activites WHERE school_id = ?', [school_id]);
     if (rows.length > 0) {
       return res.json(rows[0]);
     }
@@ -21,7 +21,7 @@ router.get('/:sid', async (req, res) => {
 
 router.post('/', async (req, res) => {
   const {
-    sid,
+    school_id,
     total_guest_talks,
     total_alumni_interactions,
     total_industrial_visits,
@@ -40,7 +40,7 @@ router.post('/', async (req, res) => {
   } = req.body;
 
   try {
-    const [existing] = await pool.query('SELECT * FROM school_activites WHERE sid = ?', [sid]);
+    const [existing] = await pool.query('SELECT * FROM school_activites WHERE school_id = ?', [school_id]);
     if (existing.length > 0) {
       await pool.query(
         `UPDATE school_activites SET
@@ -60,7 +60,7 @@ router.post('/', async (req, res) => {
           entrepreneurship = ?,
           skill_development = ?,
           current_year = YEAR(CURDATE())
-        WHERE sid = ?`,
+        WHERE school_id = ?`,
         [
           total_guest_talks,
           total_alumni_interactions,
@@ -77,13 +77,13 @@ router.post('/', async (req, res) => {
           total_research_methodology_events,
           total_entrepreneurship_events,
           total_skill_development_events,
-          sid
+          school_id
         ]
       );
     } else {
       await pool.query(
         `INSERT INTO school_activites (
-          sid,
+          school_id,
           no_of_guest_talk,
           no_of_alumni_interaction,
           no_of_industrial_visit,
@@ -102,7 +102,7 @@ router.post('/', async (req, res) => {
           current_year,
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, YEAR(CURDATE()))`,
         [
-          sid,
+          school_id,
           total_guest_talks,
           total_alumni_interactions,
           total_industrial_visits,

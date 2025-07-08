@@ -7,7 +7,7 @@ const db = require('../db');
 router.post('/save', async (req, res) => {
   try {
     const {
-      sid,
+      school_id,
       total_faculty,
       total_consultancies,
       total_beneficiaries,
@@ -15,7 +15,7 @@ router.post('/save', async (req, res) => {
       current_year
     } = req.body;
 
-    const [existing] = await db.query('SELECT * FROM consultancy WHERE sid = ?', [sid]);
+    const [existing] = await db.query('SELECT * FROM consultancy WHERE school_id = ?', [school_id]);
 
     if (existing.length > 0) {
       await db.query(
@@ -25,20 +25,20 @@ router.post('/save', async (req, res) => {
           total_no_of_beneficiaries = ?, 
           revenue_generated = ?, 
           current_year = ?
-        WHERE sid = ?`,
+        WHERE school_id = ?`,
         [
           total_faculty,
           total_consultancies,
           total_beneficiaries,
           total_revenue,
           current_year,
-          sid
+          school_id
         ]
       );
     } else {
       await db.query(
         `INSERT INTO consultancy (
-          sid,
+          school_id,
           faculties_involved,
           total_no_of_consultancies,
           total_no_of_beneficiaries,
@@ -46,7 +46,7 @@ router.post('/save', async (req, res) => {
           current_year
         ) VALUES (?, ?, ?, ?, ?, ?)`,
         [
-          sid,
+          school_id,
           total_faculty,
           total_consultancies,
           total_beneficiaries,
@@ -57,9 +57,9 @@ router.post('/save', async (req, res) => {
     }
 
     await db.query(
-      `INSERT INTO form_status (sid, form_number, status) VALUES (?, 7, 'draft') 
+      `INSERT INTO form_status (school_id, form_number, status) VALUES (?, 7, 'draft') 
        ON DUPLICATE KEY UPDATE status = 'draft'`,
-      [sid]
+      [school_id]
     );
 
     res.status(200).json({ message: 'Form 7 data saved successfully' });
@@ -72,10 +72,10 @@ router.post('/save', async (req, res) => {
 
 router.post('/submit', async (req, res) => {
   try {
-    const { sid } = req.body;
-    await db.query('UPDATE consultancy SET status = ? WHERE sid = ?', ['submitted', sid]);
-    await db.query(`INSERT INTO form_status (sid, form_number, status) VALUES (?, 7, 'submitted') 
-      ON DUPLICATE KEY UPDATE status = 'submitted'`, [sid]);
+    const { school_id } = req.body;
+    await db.query('UPDATE consultancy SET status = ? WHERE school_id = ?', ['submitted', school_id]);
+    await db.query(`INSERT INTO form_status (school_id, form_number, status) VALUES (?, 7, 'submitted') 
+      ON DUPLICATE KEY UPDATE status = 'submitted'`, [school_id]);
     res.status(200).json({ message: 'Form 7 submitted successfully' });
   } catch (err) {
     console.error('Error submitting Form 7:', err);
@@ -84,10 +84,10 @@ router.post('/submit', async (req, res) => {
 });
 
 
-router.get('/:sid', async (req, res) => {
+router.get('/:school_id', async (req, res) => {
   try {
-    const { sid } = req.params;
-    const [result] = await db.query('SELECT * FROM consultancy WHERE sid = ?', [sid]);
+    const { school_id } = req.params;
+    const [result] = await db.query('SELECT * FROM consultancy WHERE school_id = ?', [school_id]);
     if (result.length === 0) return res.status(404).json({ message: 'Form 7 data not found' });
     res.status(200).json(result[0]);
   } catch (err) {

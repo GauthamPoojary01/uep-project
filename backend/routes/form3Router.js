@@ -5,14 +5,14 @@ const db = require('../db');
 
 // Save or update staff profile
 router.post('/save', async (req, res) => {
-  const { sid, data } = req.body;
+  const { school_id, data } = req.body;
 
-  if (!sid || !data) {
-    return res.status(400).json({ error: 'sid and data are required' });
+  if (!school_id || !data) {
+    return res.status(400).json({ error: 'school_id and data are required' });
   }
 
   try {
-    const [existing] = await db.query('SELECT * FROM school_staff_profile WHERE sid = ?', [sid]);
+    const [existing] = await db.query('SELECT * FROM school_staff_profile WHERE school_id = ?', [school_id]);
 
     if (existing.length > 0) {
       await db.query(
@@ -23,20 +23,20 @@ router.post('/save', async (req, res) => {
           total_no_of_professor = ?,
           status = ?,
           rejection_reason = NULL
-        WHERE sid = ?`,
+        WHERE school_id = ?`,
         [
           data.total_no_of_associate_professor,
           data.total_no_of_assistant_professor,
           data.total_no_of_professor_of_practice,
           data.total_no_of_professor,
           data.status || 'draft',
-          sid
+          school_id
         ]
       );
     } else {
       await db.query(
         `INSERT INTO school_staff_profile (
-          sid,
+          school_id,
           total_no_of_associate_professor,
           total_no_of_assistant_professor,
           total_no_of_professor_of_practice,
@@ -45,7 +45,7 @@ router.post('/save', async (req, res) => {
           rejection_reason
         ) VALUES (?, ?, ?, ?, ?, ?, NULL)`,
         [
-          sid,
+          school_id,
           data.total_no_of_associate_professor,
           data.total_no_of_assistant_professor,
           data.total_no_of_professor_of_practice,
@@ -64,16 +64,16 @@ router.post('/save', async (req, res) => {
 
 // Submit form - updates status only
 router.post('/submit', async (req, res) => {
-  const { sid } = req.body;
+  const { school_id } = req.body;
 
-  if (!sid) {
-    return res.status(400).json({ error: 'sid is required' });
+  if (!school_id) {
+    return res.status(400).json({ error: 'school_id is required' });
   }
 
   try {
     await db.query(
-      `UPDATE school_staff_profile SET status = 'submitted', rejection_reason = NULL WHERE sid = ?`,
-      [sid]
+      `UPDATE school_staff_profile SET status = 'submitted', rejection_reason = NULL WHERE school_id = ?`,
+      [school_id]
     );
     res.json({ message: 'Form submitted successfully' });
   } catch (err) {
@@ -82,11 +82,11 @@ router.post('/submit', async (req, res) => {
   }
 });
 
-// Get form data by SID
-router.get('/:sid', async (req, res) => {
-  const { sid } = req.params;
+// Get form data by school_id
+router.get('/:school_id', async (req, res) => {
+  const { school_id } = req.params;
   try {
-    const [rows] = await db.query('SELECT * FROM school_staff_profile WHERE sid = ?', [sid]);
+    const [rows] = await db.query('SELECT * FROM school_staff_profile WHERE school_id = ?', [school_id]);
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Data not found' });
     }
