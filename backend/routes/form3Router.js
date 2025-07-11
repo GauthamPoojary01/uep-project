@@ -1,99 +1,131 @@
-// backend/routes/form3Router.js
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const db = require('../db');
+const pool = require("../db");
 
-// Save or update staff profile
-router.post('/save', async (req, res) => {
-  const { school_id, data } = req.body;
-
-  if (!school_id || !data) {
-    return res.status(400).json({ error: 'school_id and data are required' });
-  }
+// Save routeerrrrrrrrrrrrrr
+router.post("/save", async (req, res) => {
+  const { sid, data } = req.body;
+  const {
+    total_no_of_associate_professor,
+    total_no_of_assistant_professor,
+    total_no_of_professor_of_practice,
+    total_no_of_professor
+  } = data;
 
   try {
-    const [existing] = await db.query('SELECT * FROM school_staff_profile WHERE school_id = ?', [school_id]);
+    let form_id;
+
+    // Check if record exists
+    const [existing] = await pool.query(
+      "SELECT form_id FROM staff_profile WHERE school_id = ?",
+      [sid]
+    );
 
     if (existing.length > 0) {
-      await db.query(
-        `UPDATE school_staff_profile SET 
+      form_id = existing[0].form_id;
+      // Update existing
+      await pool.query(
+        `UPDATE staff_profile SET 
           total_no_of_associate_professor = ?,
           total_no_of_assistant_professor = ?,
           total_no_of_professor_of_practice = ?,
           total_no_of_professor = ?,
-          status = ?,
-          rejection_reason = NULL
-        WHERE school_id = ?`,
+          current_year = YEAR(CURDATE())
+         WHERE school_id = ?`,
         [
-          data.total_no_of_associate_professor,
-          data.total_no_of_assistant_professor,
-          data.total_no_of_professor_of_practice,
-          data.total_no_of_professor,
-          data.status || 'draft',
-          school_id
-        ]
-      );
-    } else {
-      await db.query(
-        `INSERT INTO school_staff_profile (
-          school_id,
           total_no_of_associate_professor,
           total_no_of_assistant_professor,
           total_no_of_professor_of_practice,
           total_no_of_professor,
-          status,
-          rejection_reason
-        ) VALUES (?, ?, ?, ?, ?, ?, NULL)`,
-        [
-          school_id,
-          data.total_no_of_associate_professor,
-          data.total_no_of_assistant_professor,
-          data.total_no_of_professor_of_practice,
-          data.total_no_of_professor,
-          data.status || 'draft'
+          sid
         ]
+      );
+    } else {
+      // Insert new and get form_id
+      const [result] = await pool.query(
+        `INSERT INTO staff_profile (
+          school_id, total_no_of_associate_professor, total_no_of_assistant_professor, 
+          total_no_of_professor_of_practice, total_no_of_professor, current_year
+        ) VALUES (?, ?, ?, ?, ?, YEAR(CURDATE()))`,
+        [
+          sid,
+          total_no_of_associate_professor,
+          total_no_of_assistant_professor,
+          total_no_of_professor_of_practice,
+          total_no_of_professor
+        ]
+      );
+      form_id = result.insertId;
+    }
+
+    // Update or insert status
+    const [statusRows] = await pool.query(
+      "SELECT * FROM form_status1 WHERE school_id = ?",
+      [sid]
+    );
+
+    if (statusRows.length > 0) {
+      await pool.query(
+        "UPDATE form_status1 SET status = 'draft' WHERE school_id = ?",
+        [sid]
+      );
+    } else {
+      await pool.query(
+        "INSERT INTO form_status1 (form_id, school_id, status) VALUES (?, ?, 'draft')",
+        [form_id, sid]
       );
     }
 
-    res.json({ message: 'Data saved successfully' });
+    res.status(200).json({ message: "Form saved" });
   } catch (err) {
-    console.error('Error saving form3 data:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error saving form 3 data:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
-// Submit form - updates status only
-router.post('/submit', async (req, res) => {
-  const { school_id } = req.body;
-
-  if (!school_id) {
-    return res.status(400).json({ error: 'school_id is required' });
-  }
+// Submit route
+router.post("/submit", async (req, res) => {
+  const { sid } = req.body;
 
   try {
-    await db.query(
-      `UPDATE school_staff_profile SET status = 'submitted', rejection_reason = NULL WHERE school_id = ?`,
-      [school_id]
+    await pool.query(
+      `UPDATE form_status1 SET status = 'submitted', submission_date = NOW() WHERE school_id = ?`,
+      [sid]
     );
-    res.json({ message: 'Form submitted successfully' });
+    res.status(200).json({ message: "Form submitted" });
   } catch (err) {
-    console.error('Error submitting form3:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error submitting form 3:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
-// Get form data by school_id
-router.get('/:school_id', async (req, res) => {
-  const { school_id } = req.params;
+// Get saved data
+router.get("/", async (req, res) => {
+  const sid = req.query.sid;
+
+
+  
   try {
-    const [rows] = await db.query('SELECT * FROM school_staff_profile WHERE school_id = ?', [school_id]);
-    if (rows.length === 0) {
-      return res.status(404).json({ error: 'Data not found' });
+    const [data] = await pool.query(
+      `SELECT 
+        total_no_of_associate_professor AS associate_professors,
+        total_no_of_assistant_professor AS assistant_professors,
+        total_no_of_professor_of_practice AS professors_in_practice,
+        fs.status
+      FROM staff_profile sp
+      LEFT JOIN form_status1 fs ON sp.form_id = fs.form_id
+      WHERE sp.school_id = ?`,
+      [sid]
+    );
+
+    if (data.length > 0) {
+      res.status(200).json(data[0]);
+    } else {
+      res.status(404).json({ error: "No data found" });
     }
-    res.json(rows[0]);
   } catch (err) {
-    console.error('Error fetching form3 data:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("Error fetching form 3 data:", err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
