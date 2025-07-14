@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 
-// Save routeerrrrrrrrrrrrrr
+// Save router
 router.post("/save", async (req, res) => {
   const { sid, data } = req.body;
   const {
