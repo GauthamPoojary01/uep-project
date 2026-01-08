@@ -168,16 +168,16 @@ const handleSave = async () => {
         >
           Submit
         </button>
-      </div>
+      
       <Link href="/research" className="flex">
             <Button
               type="button"
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700"
+              className="bg-gray-500 text-white px-4 py-5 rounded hover:bg-gray-700"
             >
               Next
             </Button>
           </Link>
-
+        </div>
       {status === 'rejected' && (
         <p className="mt-2 text-sm text-red-600">This form was rejected. Please update and resubmit.</p>
       )}

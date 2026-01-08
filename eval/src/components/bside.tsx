@@ -15,7 +15,7 @@ export default function Bside() {
   const router = useRouter();
 
   return (
-    <aside className="w-1/3 h-[750px] bg-gray-50 text-gray-800 p-4 rounded-lg flex flex-col ">
+    <aside className="w-3xl h-[750px] bg-gray-50 text-gray-800 p-4 rounded-lg flex flex-col ">
       <div>
         <div className="flex justify-center mb-7">
           <Image
@@ -39,7 +39,7 @@ export default function Bside() {
         </div>
         
         <h2 className="text-center text-blue-800 font-extrabold font-serif text-lg mt-4">
-          University Evaluation Portal
+          University Evaluation
         </h2>
         <hr className="my-2 border-gray-300" />
         <nav className="text-xs text-[#463737] space-y-3 mb-3">

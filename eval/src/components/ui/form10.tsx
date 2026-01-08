@@ -74,7 +74,7 @@ const Form10 = () => {
     <div className="max-w-xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">CRITERIA 10: STAFF ACHIEVEMENTS</h1>
 
-      <div className="flex flex-col gap-4 font-normal mt-1 mb-1 ml-5 max-h-[500px] overflow-y-scroll pr-2">
+      <div className="flex flex-col font-normal mt-1 ml-5 max-h-[410px] overflow-y-scroll pr-2">
         <label>a. Resource person:</label>
         <input type="number" name="resource_person" value={formData.resource_person} onChange={handleChange} disabled={readOnly} className="w-full border px-3 py-2 rounded mb-3" />
 
@@ -112,7 +112,7 @@ const Form10 = () => {
         <input type="text" name="document_link" value={formData.document_link} onChange={handleChange} disabled={readOnly} className="w-full border px-3 py-2 rounded mb-3" />
       </div>
 
-      <div className="flex gap-4 mt-6 items-center">
+      <div className="flex gap-4 mt-10 items-center">
         <Link href="/schl_act">
           <Button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Previous</Button>
         </Link>

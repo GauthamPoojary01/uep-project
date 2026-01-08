@@ -112,6 +112,7 @@ const handleSubmit = () => {
     <div className="max-w-xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">CRITERIA 5: PHD</h1>
       <form className="space-y-4" onSubmit={e => e.preventDefault()}>
+      <div className="flex flex-col gap-4 font-normal mt-1 mb-8 ml-5 h-110 max-h-[400px] overflow-y-scroll pr-2">
         {[{
           label: 'a. Total Number of Intake:', name: 'intake'
         }, {
@@ -138,7 +139,8 @@ const handleSubmit = () => {
             />
           </div>
         ))}
-
+      </div>
+        
         <div className="flex gap-4 mt-6 items-center">
           <Link href="/research">
             <Button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Previous</Button>
@@ -160,7 +162,7 @@ const handleSubmit = () => {
           </Link>
         </div>
         
-        {!isSaved && <p className="text-purple-600 mt-2">Please save before submitting or leaving.</p>}
+        {!isSaved && <p className="text-purple-600 mt-2 ml-28">Please save before submitting or leaving.</p>}
       </form>
     </div>
   );

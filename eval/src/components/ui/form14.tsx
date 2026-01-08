@@ -68,7 +68,8 @@ const Form14 = () => {
     <div className="max-w-xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">CRITERIA 14: PLACEMENT AND HIGHER EDUCATION</h1>
       <form className="space-y-4" onSubmit={e => e.preventDefault()}>
-        <label>a. Total number of intake in year:</label>
+        <div className="flex flex-col  font-normal mt-2  ml-1 max-h-[400px] overflow-y-scroll pr-2">
+          <label>a. Total number of intake in year:</label>
         <input type="number" name="intake" value={formData.intake} onChange={handleChange} disabled={readOnly} className="w-full border px-3 py-2 rounded mb-3" />
 
         <label>b. Total number of students admitted:</label>
@@ -86,6 +87,8 @@ const Form14 = () => {
         <label>f. Link of the details:</label>
         <input type="text" name="details_link" value={formData.details_link} onChange={handleChange} disabled={readOnly} className="w-full border px-3 py-2 rounded mb-3" />
 
+        </div>
+        
         <div className="flex gap-4 mt-6 items-center">
           <Link href="/stu_intake">
             <Button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Previous</Button>

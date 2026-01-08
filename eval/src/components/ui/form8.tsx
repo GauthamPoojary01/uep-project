@@ -103,10 +103,10 @@ const Form8 = () => {
   ];
 
   return (
-    <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">CRITERIA 8: MOU's</h1>
+    <div className="max-w-xl mx-auto  p-4">
+      <h1 className="text-2xl font-bold mb-2">CRITERIA 8: MOU's</h1>
       <form className="space-y-4" onSubmit={e => e.preventDefault()}>
-        <div className="flex flex-col gap-4 font-normal mt-1 mb-1 ml-1 max-h-[500px] overflow-y-scroll pr-2">
+        <div className="flex flex-col gap-2 font-normal  ml-1 max-h-[410px] overflow-y-scroll pr-2">
           {fields.map(({ label, name, readOnly: isFieldReadOnly }) => (
             <div key={name}>
               <label>{label}</label>
@@ -122,7 +122,7 @@ const Form8 = () => {
           ))}
         </div>
 
-        <div className="flex gap-4 mt-6 items-center">
+        <div className="flex gap-4 mt-8 items-center">
           <Link href="/consult">
             <Button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Previous</Button>
           </Link>

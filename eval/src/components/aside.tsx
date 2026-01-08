@@ -26,7 +26,7 @@ export default function Aside({ username }: AsideProps) {
   }, []);
 
   return (
-    <aside className="w-3/9 h-170 bg-gray-50 text-gray-800 p-[15px] rounded-[10px] flex flex-col justify-between">
+    <aside className="w-3/8 h-165 bg-gray-50 text-gray-800 p-[15px] rounded-[10px] flex flex-col justify-between">
       <div>
         <div className="flex justify-center mb-7">
           <Image
@@ -44,7 +44,7 @@ export default function Aside({ username }: AsideProps) {
 
         <hr className="my-2" />
 
-        <div className="w-full text-left text-xs text-[#2d2525] space-y-3 mb-5 mt-5">
+        <div className="w-full text-left text-s text-[#2d2525] space-y-3 mb-3 mt-5">
           <Link className="block" href="/">
             Home
           </Link>
@@ -74,7 +74,7 @@ export default function Aside({ username }: AsideProps) {
         </div>
       </div>
 
-      <p className="text-[10px] text-[#606060] mt-10 text-center">
+      <p className="text-[20px] text-[#606060] mt-10 text-center">
         developed by{" "}
         <Link href="../images/theteam.jpg" className="text-[#5a45f3]">
           theteam
@@ -82,11 +82,11 @@ export default function Aside({ username }: AsideProps) {
       </p>
 
       <div className="flex flex-wrap justify-center text-[10px] gap-x-2 w-full max-w-screen-sm">
-        <a href="#" className="text-[#3C29d0] px-2">Privacy Policy</a>
-        <a href="#" className="text-[#3C29d0] px-2">Contact Us</a>
-        <a href="#" className="text-[#3C29d0] px-2">About Us</a>
-        <a href="#" className="text-[#3C29d0] px-2">Admissions</a>
-        <a href="#" className="text-[#3C29d0] px-2">T&C</a>
+        <a href="#" className="text-[#3C29d0] px-2 text-[15px]">Privacy Policy</a>
+        <a href="#" className="text-[#3C29d0] px-2 text-[15px]">Contact Us</a>
+        <a href="#" className="text-[#3C29d0] px-2 text-[15px]">About Us</a>
+        <a href="#" className="text-[#3C29d0] px-2 text-[15px]">Admissions</a>
+        <a href="#" className="text-[#3C29d0] px-2 text-[15px]">T&C</a>
       </div>
     </aside>
   );

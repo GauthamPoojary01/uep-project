@@ -31,10 +31,10 @@ export default function Home() {
           {department ? department.toUpperCase() : "Loading Department..."}
         </p>
 
-        <div className="flex justify-center items-center">
+        <div className=" flex justify-center items-center">
           {username && <Aside username={username} />}
           <div
-            className="bg-white rounded-[15px] shadow-2xl px-10 py-10"
+            className="bg-white rounded-[15px] shadow-2xl mb-6 h-165 px-20 py-10"
             style={{
               width: "calc(100vw - 7vw - 30vw)",
               marginLeft: "2vw",

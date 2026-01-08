@@ -53,10 +53,10 @@ export default function Dashboard() {
           style={{ textShadow: "0 4px 12px rgba(0, 0, 0, 0.2)" }}
         >
           {department ? department.toUpperCase() : "Loading Department..."} 
-        </p>
+        </p><br></br>
         <div className="flex justify-center items-center gap-4">
           <Aside username={username as string} />
-          <div className="flex-2 bg-gray-50 rounded-lg p-5 w-150 h-160 mb-4">
+          <div className="flex-2 bg-gray-50 rounded-lg p-5 w-155 h-165 ">
             <h1 className="text-[25px] text-[#0f0163] font-bold mb-3">Home</h1>
             <div className="flex flex-col gap-4 font-medium mt-1 mb-1 ml-5 mr-15 h-110 overflow-y-scroll">
               {parameters.map((item, index) => (

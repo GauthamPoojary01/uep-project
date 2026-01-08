@@ -83,9 +83,9 @@ const Form9 = () => {
 
   return (
     <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">CRITERIA 9: SCHOOL ACTIVITIES</h1>
+      <h1 className="text-2xl font-bold mb-3">CRITERIA 9: SCHOOL ACTIVITIES</h1>
       <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-        <div className="flex flex-col gap-4 font-normal mt-1 mb-1 ml-5 max-h-[500px] overflow-y-scroll pr-2">
+        <div className="flex flex-col font-normal mt-1 mb-1 ml-5 max-h-[420px] overflow-y-scroll pr-2">
           {Object.entries({
             'a. Total number of guest talks:': 'total_guest_talks',
             'b. Total number of alumni interaction:': 'total_alumni_interactions',
@@ -143,7 +143,7 @@ const Form9 = () => {
             <Button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Next</Button>
           </Link>
         </div>
-        {!isSaved && <p className="text-purple-600 mt-2">Please save before submitting or leaving.</p>}
+        {!isSaved && <p className="text-purple-600 ">Please save before submitting or leaving.</p>}
       </form>
     </div>
   );

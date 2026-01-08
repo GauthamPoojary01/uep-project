@@ -106,9 +106,9 @@ const Form6 = () => {
 
   return (
     <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">CRITERIA 6: RESEARCH PROJECTS</h1>
+      <h1 className="text-2xl font-bold mb-auto">CRITERIA 6: RESEARCH PROJECTS</h1>
       <form className="space-y-4" onSubmit={e => e.preventDefault()}>
-        <div className="flex flex-col gap-4 font-normal mt-1 mb-1 ml-1 max-h-[500px] overflow-y-scroll pr-2">
+        <div className="flex flex-col gap-2 font-normal mt-2 mb-1 ml-1 max-h-[400px] overflow-y-scroll pr-2">
           {[{
             label: 'a. Number of Faculties Involved:', name: 'total_faculty'
           }, {
@@ -142,7 +142,7 @@ const Form6 = () => {
           ))}
         </div>
 
-        <div className="flex gap-4 mt-6 items-center">
+        <div className="flex gap-4 mt-10 items-center">
           <Link href="/phd">
             <Button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Previous</Button>
           </Link>
@@ -162,7 +162,7 @@ const Form6 = () => {
             <Button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Next</Button>
           </Link>
         </div>
-        {!isSaved && <p className="text-purple-600 mt-2">Please save before submitting or leaving.</p>}
+        {!isSaved && <p className="text-purple-600 mt-7">Please save before submitting or leaving.</p>}
       </form>
     </div>
   );

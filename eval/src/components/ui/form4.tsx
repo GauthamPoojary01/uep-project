@@ -120,7 +120,7 @@ const Form4 = () => {
     <div className="max-w-xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">CRITERIA 4: RESEARCH</h1>
       <form className="space-y-4" onSubmit={e => e.preventDefault()}>
-        <div className="flex flex-col gap-4 font-normal mt-1 mb-1 ml-5 h-120 max-h-[500px] overflow-y-scroll pr-2">
+        <div className="flex flex-col gap-4 font-normal mt-1 mb-8 ml-5 h-110 max-h-[400px] overflow-y-scroll pr-2">
           {[ 
             { label: 'a. Total Number of Scopus', name: 'scopus' },
             { label: 'b. Total Number of WOS', name: 'wos' },
@@ -141,13 +141,13 @@ const Form4 = () => {
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
                 disabled={readOnly}
-                className="w-full border px-3 py-2 rounded mb-3"
+                className="w-full border px-3 py-2 rounded "
               />
             </div>
           ))}
         </div>
 
-        <div className="flex gap-4 mt-6 items-center">
+        <div className="flex gap-4 mt-4 items-center">
           <Link href="/staff_pf">
             <Button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Previous</Button>
           </Link>
@@ -168,7 +168,7 @@ const Form4 = () => {
             <Button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Next</Button>
           </Link>
         </div>
-        {!isSaved && <p className="text-purple-600 mt-2">Please save before submitting or leaving.</p>}
+        {!isSaved && <p className="text-purple-600 ml-6 ">Please save before submitting or leaving.</p>}
       </form>
     </div>
   );

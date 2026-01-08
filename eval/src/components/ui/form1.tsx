@@ -92,8 +92,8 @@ const Form1 = () => {
 };
 
   return (
-    <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">1. SCHOOL PROFILE</h1>
+    <div className=" min-h-152 px-10 py-5 p-[20px] max-w-xl mx-auto rounded-lg relative">
+      <h1 className="text-xl font-bold mb-3">1. SCHOOL PROFILE</h1>
 
       <label>a. Year of Establishment:</label>
       <input
@@ -159,7 +159,7 @@ const Form1 = () => {
         <button
           onClick={handleSave}
           disabled={readOnly}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
         >
           Save
         </button>
@@ -170,11 +170,10 @@ const Form1 = () => {
         >
           Submit
         </button>
-      </div>
-<Link href="/schl_prg" className="flex">
+        <Link href="/schl_prg" className="flex">
             <Button
               type="button"
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700"
+              className="bg-gray-500 text-white px-6 py-5 rounded hover:bg-gray-700"
             >
               Next
             </Button>
@@ -182,6 +181,7 @@ const Form1 = () => {
       {status === 'rejected' && (
         <p className="mt-2 text-sm text-red-600">This form was rejected. Please update and resubmit.</p>
       )}
+      </div>
     </div>
   );
 };

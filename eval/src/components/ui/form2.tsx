@@ -157,7 +157,7 @@ const Form2 = () => {
         <Link href="/staff_pf" className="flex">
             <Button
               type="button"
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700"
+              className="bg-gray-500 text-white px-5 py-5 rounded hover:bg-gray-700"
             >
               Next
             </Button>

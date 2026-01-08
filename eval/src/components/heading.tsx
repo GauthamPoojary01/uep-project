@@ -5,7 +5,7 @@ import logo from "../../public/images/logo1.jpg";
 import { Autour_One } from "next/font/google";
 export default function Headings() {
   return ( 
-       <div className="bg-white h-[16vh] w-screen flex justify-start items-center" >
+       <div className="bg-white h-[18vh] w-screen flex justify-start items-center" >
       <Image 
         src={logo}
         alt="College Logo"
