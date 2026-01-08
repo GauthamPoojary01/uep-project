@@ -154,34 +154,28 @@ const Form1 = () => {
         disabled={readOnly}
         className="w-full border px-3 py-2 rounded mb-3"
       />
-
-      <div className="flex gap-4 mt-4">
-        <button
-          onClick={handleSave}
-          disabled={readOnly}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-        >
-          Save
-        </button>
-        <button
-          onClick={handleSubmit}
-          disabled={!isSaved || readOnly}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Submit
-        </button>
-      </div>
-<Link href="/schl_prg" className="flex">
-            <Button
-              type="button"
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700"
-            >
-              Next
-            </Button>
+      <div className="flex gap-4 mt-6 items-center">
+          <Link href="/">
+            <Button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Previous</Button>
           </Link>
-      {status === 'rejected' && (
-        <p className="mt-2 text-sm text-red-600">This form was rejected. Please update and resubmit.</p>
-      )}
+          <div className="flex-1 flex justify-center gap-4">
+            <button type="button" onClick={handleSave} disabled={readOnly} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+              Save
+            </button>
+            <button
+              type="submit"
+              onClick={handleSubmit}
+              disabled={!isSaved || readOnly || !allFilled}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Submit
+            </button>
+          </div>
+          <Link href="/schl_prg">
+            <Button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Next</Button>
+          </Link>
+        </div>
+        {!isSaved && <p className="text-purple-600 mt-2">Please save before submitting or leaving.</p>}
     </div>
   );
 };
