@@ -67,6 +67,7 @@ const Form14 = () => {
   return (
     <div className="max-w-xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">CRITERIA 14: PLACEMENT AND HIGHER EDUCATION</h1>
+      
       <form className="space-y-4" onSubmit={e => e.preventDefault()}>
         <div className="flex flex-col  font-normal mt-2  ml-1 max-h-[400px] overflow-y-scroll pr-2">
           <label>a. Total number of intake in year:</label>
@@ -87,13 +88,12 @@ const Form14 = () => {
         <label>f. Link of the details:</label>
         <input type="text" name="details_link" value={formData.details_link} onChange={handleChange} disabled={readOnly} className="w-full border px-3 py-2 rounded mb-3" />
 
-        </div>
-        
-        <div className="flex gap-4 mt-6 items-center">
+        <div className="flex gap-66 mt-6 items-center">
           <Link href="/stu_intake">
-            <Button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Previous</Button>
+            <button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Previous</button>
           </Link>
-          <div className="flex-1 flex justify-center gap-4">
+          
+          <div className="flex mt-0 items-end-safe gap-10">
             <button type="button" onClick={handleSave} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Save</button>
             <button
               type="submit"
@@ -104,13 +104,10 @@ const Form14 = () => {
             >
               Submit
             </button>
-          </div>
-          <Link href="/research">
-            <Button type="button" className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Next</Button>
-          </Link>
-        </div>
+            </div>
+            </div>
         {!isSaved && <p className="text-purple-600 mt-2">Please save before submitting or leaving.</p>}
-      </form>
+    </form>
     </div>
   );
 };
